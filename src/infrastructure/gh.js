@@ -18,7 +18,7 @@ variables.optionalEnvVariables([
 ])
 
 export async function sendRepositoryDispatch(eventType, payload, repository) { 
-    if (variables.skipRepositoryDispatches.to) return
+    if (variables.skipRepositoryDispatches) return
 
     const repo = repository || variables.repository
     if (!repo) throw new Error("Repository name is required")
