@@ -23,7 +23,10 @@ export async function sendRepositoryDispatch(eventType, payload, repository) {
     const repo = repository || variables.repository
     if (!repo) throw new Error("Repository name is required")
 
-    await axios.post(`https://api.github.com/repos/${variables.repositoryOwner}/${repo}/dispatches`, {
+    //in this case the repo variable should be repositoryOwner/repositoryName
+    //for example Miruken-Go/demo.microservices
+    //the git.repository context variable is in this format
+    await axios.post(`https://api.github.com/repos/${repo}/dispatches`, {
         event_type:     eventType,
         client_payload: payload
     }, {
@@ -45,6 +48,6 @@ export async function sendRepositoryDispatches(eventType, payload) {
     `)
 
     for (const repo of repos) {
-        await sendRepositoryDispatch(eventType, payload, repo.name)
+        await sendRepositoryDispatch(eventType, payload, `${variables.repositoryOwner}/${repo.name}`)
     }
 }
