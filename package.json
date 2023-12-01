@@ -1,0 +1,12 @@
+{
+  "name": "ci.cd",
+  "version": "1.0.0",
+  "description": "Shared tools for ci.cd",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "provenstyle",
+  "license": "ISC"
+}
