@@ -28,7 +28,7 @@ export async function sendRepositoryDispatch(eventType, payload, repository) {
     //the git.repository context variable is in this format
     await axios.post(`https://api.github.com/repos/${repo}/dispatches`, {
         event_type:     eventType,
-        client_payload: payload
+        client_payload: payload | {}
     }, {
         headers: {
             Accept: 'application/vnd.github+json',
