@@ -209,8 +209,9 @@ export class B2C {
         }
     }
 
-    async configureCustomPolicies () {
-
+    async configureCustomPolicies (customPoliciesDirectory) {
+        if (!customPoliciesDirectory) throw new Error('customPoliciesDirectory is requried')
+        
         logging.header("Deploying B2C Configuration")
 
         const identityExperienceFrameworkClient = await this.getApplicationByName('IdentityExperienceFramework')
@@ -226,7 +227,6 @@ export class B2C {
         const authorizationServiceUrl = `https://${appUrl}/enrich`
 
         //https://learn.microsoft.com/en-us/azure/active-directory-b2c/deploy-custom-policies-devops
-        const customPoliciesDirectory = new URL('../custom-policies', import.meta.url).pathname
         const customPoliciesFileOrder = [
             'TrustFrameworkBase.xml',
             'TrustFrameworkLocalization.xml',
