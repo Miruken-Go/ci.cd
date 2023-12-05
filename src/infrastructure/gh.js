@@ -37,7 +37,7 @@ export async function sendRepositoryDispatch(eventType, payload, repository) {
         }
     })
 
-    console.log(`Sent [${eventType}] repository dispatch to [${variables.repository}] with data [${JSON.stringify(payload)}]`)
+    console.log(`Sent [${eventType}] repository dispatch to [${repo}] with data [${JSON.stringify(payload)}]`)
 }
 
 export async function sendRepositoryDispatches(eventType, payload) { 
