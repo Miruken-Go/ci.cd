@@ -5,12 +5,13 @@ import axios       from 'axios'
 
 secrets.require([
     'ghToken',
-    'GH_TOKEN'
+    'GH_TOKEN',
 ])
 
 variables.requireEnvVariables([
     'repository',
-    'repositoryOwner'
+    'repositoryOwner',
+    'ref',
 ])
 
 variables.optionalEnvVariables([
@@ -27,8 +28,9 @@ export async function sendRepositoryDispatch(eventType, payload, repository) {
     //for example Miruken-Go/demo.microservices
     //the git.repository context variable is in this format
     await axios.post(`https://api.github.com/repos/${repo}/dispatches`, {
+        ref:            variables.ref,
         event_type:     eventType,
-        client_payload: payload
+        client_payload: payload,
     }, {
         headers: {
             Accept: 'application/vnd.github+json',
