@@ -28,9 +28,11 @@ export async function sendRepositoryDispatch(eventType, payload, repository) {
     //for example Miruken-Go/demo.microservices
     //the git.repository context variable is in this format
     await axios.post(`https://api.github.com/repos/${repo}/dispatches`, {
-        ref:            variables.ref,
         event_type:     eventType,
-        client_payload: payload,
+        client_payload: {
+            ...payload,
+            ref: variables.ref,
+        }
     }, {
         headers: {
             Accept: 'application/vnd.github+json',
