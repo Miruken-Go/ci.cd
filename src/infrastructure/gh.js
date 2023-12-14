@@ -24,15 +24,17 @@ export async function sendRepositoryDispatch(eventType, payload, repository) {
     const repo = repository || variables.repository
     if (!repo) throw new Error("Repository name is required")
 
+    payload =  {
+        ...payload,
+        ref: variables.ref,
+    }
+
     //in this case the repo variable should be repositoryOwner/repositoryName
     //for example Miruken-Go/demo.microservices
     //the git.repository context variable is in this format
     await axios.post(`https://api.github.com/repos/${repo}/dispatches`, {
         event_type:     eventType,
-        client_payload: {
-            ...payload,
-            ref: variables.ref,
-        }
+        client_payload: payload
     }, {
         headers: {
             Accept: 'application/vnd.github+json',
