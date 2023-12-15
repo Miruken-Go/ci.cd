@@ -160,15 +160,15 @@ export class B2C {
                     resourceAppId: appRegistration.appId, 
                     resourceAccess: [
                         {
-                            id:   GROUPS_ID,
+                            id:   GROUP_ID,
                             type: 'Scope',
                         },
                         {
-                            id:   ROLES_ID,
+                            id:   ROLE_ID,
                             type: 'Scope',
                         },
                         {
-                            id:   ENTITLEMENTS_ID,
+                            id:   ENTITLEMENT_ID,
                             type: 'Scope',
                         },
                     ],
