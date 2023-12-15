@@ -100,9 +100,9 @@ export class B2C {
     }
 
     async configureAppRegistration(domain) {
-        const GROUPS_ID       = 'db580dbb-797c-4334-bf09-db802106accd'
-        const ROLES_ID        = '0ba8756b-c67c-4fd3-9d70-488fc8da3b55'
-        const ENTITLEMENTS_ID = 'd748b2c9-a76b-47b2-8c7b-fa348fbb474d'
+        const GROUP_ID       = 'db580dbb-797c-4334-bf09-db802106accd'
+        const ROLE_ID        = '0ba8756b-c67c-4fd3-9d70-488fc8da3b55'
+        const ENTITLEMENT_ID = 'd748b2c9-a76b-47b2-8c7b-fa348fbb474d'
         
         const appRegistration = await this.createOrUpdateApplication({
             displayName:    domain.name,
@@ -112,28 +112,28 @@ export class B2C {
                 requestedAccessTokenVersion: 2,
                 oauth2PermissionScopes: [
                     {
-                        id:                      GROUPS_ID, 
+                        id:                      GROUP_ID, 
                         adminConsentDescription: 'Groups to which the user belongs.',
-                        adminConsentDisplayName: 'Groups',
+                        adminConsentDisplayName: 'Group',
                         isEnabled:               true,
                         type:                    'Admin',
-                        value:                   'Groups',
+                        value:                   'Group',
                     },
                     {
-                        id:                      ROLES_ID, 
+                        id:                      ROLE_ID, 
                         adminConsentDescription: 'Roles to which a user belongs',
-                        adminConsentDisplayName: 'Roles',
+                        adminConsentDisplayName: 'Role',
                         isEnabled:               true,
                         type:                    'Admin',
-                        value:                   'Roles',
+                        value:                   'Role',
                     },
                     {
-                        id:                      ENTITLEMENTS_ID, 
+                        id:                      ENTITLEMENT_ID, 
                         adminConsentDescription: 'Entitlements which belong to the user',
-                        adminConsentDisplayName: 'Entitlements',
+                        adminConsentDisplayName: 'Entitlement',
                         isEnabled:               true,
                         type:                    'Admin',
-                        value:                   'Entitlements',
+                        value:                   'Entitlement',
                     },
                 ],
             },

@@ -107,7 +107,7 @@ export class Application {
         this.implicitFlow   = opts.implicitFlow || false
         this.spa            = opts.spa          || false
         this.enrichApi      = opts.enrichApi    || false
-        this.scopes         = opts.scopes       || ['Groups', 'Roles', 'Entitlements']
+        this.scopes         = opts.scopes       || ['Group', 'Role', 'Entitlement']
         this.secrets        = opts.secrets      || []
         this.imageName      = `${organization.containerRepositoryName}.azurecr.io/${name}` 
     }
