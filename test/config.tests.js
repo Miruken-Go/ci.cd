@@ -207,6 +207,65 @@ describe('Application', function () {
     it('exitsts', function () { 
         expect(Application).to.exist
     })
+
+    describe('containerAppName', () => {
+        const appWithoutEnv = new Application({
+            name:         'n',
+            location:     'l',
+            organization: 'o', 
+            resourceGroups: new ResourceGroups({
+                name: 'n'
+            })
+        })
+
+        const appWithEnv = new Application({
+            name:         'n',
+            location:     'l',
+            organization: 'o', 
+            env:          'e',
+            resourceGroups: new ResourceGroups({
+                name: 'n'
+            })
+        })
+
+        const appWithEnvAndInst = new Application({
+            name:         'n',
+            location:     'l',
+            organization: 'o', 
+            env:          'e',
+            instance:     'i',
+            resourceGroups: new ResourceGroups({
+                name: 'n'
+            })
+        })
+
+        const appWithLongName = new Application({
+            name:         '123456789012345678901234567890',
+            location:     'l',
+            organization: 'o', 
+            env:          'e',
+            instance:     'i',
+            resourceGroups: new ResourceGroups({
+                name: 'n'
+            })
+        })
+
+        it('requires env', () => {
+            expect(() => {appWithoutEnv.containerAppName}).to.throw("env required")
+        })
+
+        it('with env', () => {
+            expect(appWithEnv.containerAppName).to.be.equal('n-e')
+        })
+
+        it('with env and instance', () => {
+            expect(appWithEnvAndInst.containerAppName).to.be.equal('n-e-i')
+        })
+
+        it('name cannot be greater than 32 characters', () => {
+            expect(() => appWithLongName.containerAppName).to.throw("Configuration Error - containerAppName cannot be longer than 32 characters")
+        })
+    })
 })
 
 describe('Instantiating Organization', function () {
@@ -215,6 +274,12 @@ describe('Instantiating Organization', function () {
         location: 'CentralUs',
         env:      'dev',
         instance: 'ci',
+        applications: [
+            {
+                name:      'enrich-srv', 
+                enrichApi: true,  
+            },
+        ],
         domains: [
             {
                 name: 'billing', 
@@ -256,13 +321,30 @@ describe('Instantiating Organization', function () {
         ],
     })
     it('creates domain', function () { 
-        console.log(inspect(org, { depth: null }))
+        //console.log(inspect(org, { depth: null }))
         expect(org.domains.length).to.be.equal(2)
         expect(org.domains[0].instance).to.be.equal('ci')
         expect(org.domains[0].applications.length).to.be.equal(2)
         expect(org.domains[0].applications[0].instance).to.be.equal('ci')
         expect(org.domains[1].instance).to.be.equal('ci')
         expect(org.domains[1].applications.length).to.be.equal(4)
+    })
+    it('returns enrich applications', () => {
+        expect(org.enrichApiApplication.name).to.be.equal('enrich-srv')
+    })
+    it('throw exception if there is no enrich application defined', () => {
+        org.applications[0].enrichApi = false
+        expect(() => {org.enrichApiApplication}).to.throw('No application defined in organization where enrichApi = true')
+    })
+    it('gets applications by name from organization', () => {
+        expect(org.getApplicationByName('enrich-srv').name).to.be.equal('enrich-srv')
+    })
+    it('gets applications by name from domains', () => {
+        expect(org.getApplicationByName('tournaments').name).to.be.equal('tournaments')
+    })
+    it('throw exception when application is not found', () => {
+        org.applications[0].enrichApi = false
+        expect(() => {org.getApplicationByName('I dont exist')}).to.throw('Application with name I dont exist not found')
     })
 })
 

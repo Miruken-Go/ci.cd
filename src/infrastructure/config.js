@@ -221,7 +221,6 @@ export class Organization {
             env:  env
         })
 
-
         if(opts.applications) {
             for (const application of opts.applications) {
                 this.applications.push((application instanceof Application)
