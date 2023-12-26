@@ -188,6 +188,10 @@ describe('Organization', function () {
 
             expect(()=>{org.requireEnv()}).to.throw('env required')
         })
+        it('keyVaultName must be less than 24', function () {
+            org.name = '123456789012345678901234'
+            expect(() => {org.keyVaultName}).to.throw('Configuration Error - keyVaultName cannot be longer than 24 characters')
+        })
     })
 
     it('has a name', function () {
