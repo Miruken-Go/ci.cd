@@ -17,6 +17,22 @@ describe('ResourceGroups', function () {
         it('name is required', function () {
             expect(()=>{new ResourceGroups({})}).to.throw('name required')
         })
+
+        describe('requireEnv', () => {
+            it('thows exception when env is not given', () => {
+                const resourceGroups = new ResourceGroups({
+                    name: 'n',
+                })
+                expect(() => resourceGroups.requireEnv()).to.throw('env required')
+            })
+            it('does not thow exception when env is given', () => {
+                const resourceGroups = new ResourceGroups({
+                    name: 'n',
+                    env:  'e',
+                })
+                resourceGroups.requireEnv()
+            })
+        })
     })
 
     describe('with instance', function () {
@@ -82,9 +98,24 @@ describe('B2C', function () {
         it('name is required', function () {
             expect(()=>{new B2C({})}).to.throw('name required')
         })
+        describe('requireEnv', () => {
+            it('thows exception when env is not given', () => {
+                const b2c = new B2C({
+                    name: 'n',
+                })
+                expect(() => b2c.requireEnv()).to.throw('env required')
+            })
+            it('does not thow exception when env is given', () => {
+                const b2c = new B2C({
+                    name: 'n',
+                    env:  'e',
+                })
+                b2c.requireEnv()
+            })
+        })
     })
 
-    describe('b2c', function(){
+    describe('valid b2c instance', function(){
 
         let b2c = new B2C({
             name: 'Major-League-Miruken',
@@ -206,6 +237,30 @@ describe('Domain', function () {
 describe('Application', function () {
     it('exitsts', function () { 
         expect(Application).to.exist
+    })
+
+    describe('validation', () => {
+        it('requires name', () => {
+            expect(() => {new Application({})}).to.throw('name required')
+        })
+        it('requires location', () => {
+            expect(() => {new Application({
+                name: 'n'
+            })}).to.throw('location required')
+        })
+        it('requires organization', () => {
+            expect(() => {new Application({
+                name:     'n',
+                location: 'l'
+            })}).to.throw('organization required')
+        })
+        it('requires resourceGroups', () => {
+            expect(() => {new Application({
+                name:         'n',
+                location:     'l',
+                organization: 'o',
+            })}).to.throw('resourceGroups required')
+        })
     })
 
     describe('containerAppName', () => {
