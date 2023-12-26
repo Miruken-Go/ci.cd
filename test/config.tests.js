@@ -143,16 +143,55 @@ describe('Organization', function () {
         env:      'dev',
         location: 'CentralUs',
     })
+
     it('exitsts', function () { 
         expect(Organization).to.exist
     })
 
-    it('has a name', function () {
-        expect(org.name).to.equal('majorleaguemiruken')
+    describe('validation', () => {
+        it('name is required', function () {
+            expect(() => { new Organization({})}).to.throw('name required')
+        })
+
+        it('location is required', function () {
+            expect(() => { new Organization({
+                name: 'n'
+            })}).to.throw('location required')
+        })
+
+        it('valid Organization is valid', function () {
+            new Organization({
+                name:     'n',
+                location: 'l',
+            })
+        })
+
+        it('env length must be 4 or less', function () {
+            expect(() => { new Organization({
+                name:     'n',
+                location: 'l',
+                env:      '12345'
+            })}).to.throw('Configuration Error - Env cannot be longer than 4 characters')
+        })
+        it('4 character env length is ok', function () {
+            new Organization({
+                name:     'n',
+                location: 'l',
+                env:      '1234'
+            })
+        })
+        it('valid Organization is valid', function () {
+            const org = new Organization({
+                name:     'n',
+                location: 'l',
+            })
+
+            expect(()=>{org.requireEnv()}).to.throw('env required')
+        })
     })
 
-    it('name is required', function () {
-        expect(() => { new Organization({})}).to.throw('name required')
+    it('has a name', function () {
+        expect(org.name).to.equal('majorleaguemiruken')
     })
 
     it('resourceGroups', function () {
@@ -191,6 +230,58 @@ describe('Organization', function () {
             }).to.throw("Configuration Error - Organization name cannot be longer than 19 characters")
         })
     })
+
+    describe('applications', () => {
+        const app = new Application({
+            name:           'a',
+            location:       'l',
+            organization:   'o',
+            resourceGroups: []
+        })
+        const org = new Organization({
+            name:     'Major-League-Miruken',
+            env:      'dev',
+            location: 'CentralUs',
+            applications: [
+                app
+            ]
+        })
+        expect(org.applications[0]).to.be.equal(app)
+    })
+
+    describe('domain', () => {
+        it('can take existing domain', () => {
+            const domain = new Domain({
+                name:           'a',
+                location:       'l',
+                organization:   'o',
+            })
+            const org = new Organization({
+                name:     'Major-League-Miruken',
+                env:      'dev',
+                location: 'CentralUs',
+                domains: [
+                    domain
+                ]
+            })
+            expect(org.domains[0]).to.be.equal(domain)
+        })
+        it('can take domain object literal', () => {
+            const org = new Organization({
+                name:     'Major-League-Miruken',
+                env:      'dev',
+                location: 'CentralUs',
+                domains: [
+                    {
+                        name:           'a',
+                        location:       'l',
+                        organization:   'o',
+                    }
+                ]
+            })
+            expect(org.domains.length).to.equal(1)
+        })
+    })
 })
 
 describe('Domain', function () {
@@ -213,6 +304,32 @@ describe('Domain', function () {
         ]
     })
 
+    describe('validation', () => {
+        it('name is required', function () {
+            expect(() => { new Domain({})}).to.throw('name required')
+        })
+        it('location is required', function () {
+            expect(() => { new Domain({
+                name: 'name'
+            })}).to.throw('location required')
+        })
+        it('organization is required', function () {
+            expect(() => { new Domain({
+                name:     'n',
+                location: 'l',
+
+            })}).to.throw('organization required')
+        })
+        it('valid object is valid', function () {
+            new Domain({
+                name:         'n',
+                location:     'l',
+                organization: 'o',
+
+            })
+        })
+    })
+
     it('exitsts', function () { 
         expect(Domain).to.exist
     })
@@ -221,9 +338,6 @@ describe('Domain', function () {
         expect(domain.name).to.equal('billing')
     })
 
-    it('name is required', function () {
-        expect(() => { new Domain({})}).to.throw('name required')
-    })
 
     it('has a reference to the organization', function () {
         expect(domain.organization).to.equal(org)
@@ -231,6 +345,25 @@ describe('Domain', function () {
 
     it('has array of applications', function () {
         expect(domain.applications.length).to.equal(1)
+    })
+
+    it('application instance can be  passed in ', function () {
+        const app = new Application({
+            name:           'a',
+            location:       'l',
+            organization:   'o',
+            resourceGroups: []
+
+        })
+        const domain = new Domain({
+            name:         'n',
+            location:     'l',
+            organization: 'o',
+            applications: [
+                app
+            ]
+        })
+        expect(domain.applications[0]).to.be.equal(app)
     })
 })
 
@@ -260,6 +393,14 @@ describe('Application', function () {
                 location:     'l',
                 organization: 'o',
             })}).to.throw('resourceGroups required')
+        })
+        it('valid object throws no exceptions', () => {
+            new Application({
+                name:           'n',
+                location:       'l',
+                organization:   'o',
+                resourceGroups: []
+            })
         })
     })
 
@@ -310,11 +451,11 @@ describe('Application', function () {
         })
 
         it('with env', () => {
-            expect(appWithEnv.containerAppName).to.be.equal('n-e')
+            expect(appWithEnv.containerAppName).to.equal('n-e')
         })
 
         it('with env and instance', () => {
-            expect(appWithEnvAndInst.containerAppName).to.be.equal('n-e-i')
+            expect(appWithEnvAndInst.containerAppName).to.equal('n-e-i')
         })
 
         it('name cannot be greater than 32 characters', () => {
