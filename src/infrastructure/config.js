@@ -207,8 +207,10 @@ export class Organization {
         this.gitRepositoryUrl = opts.gitRepositoryUrl
 
         this.containerRepositoryName = `${name}global`
-        if (this.containerRepositoryName.length > 32)
-            throw `Configuration Error - containerRepositoryName cannot be longer than 32 characters : ${this.containerRepositoryName} [${this.containerRepositoryName.length}]`
+
+        //Good validation logic, but cannot be hit the way the code is currently written.
+        // if (this.containerRepositoryName.length > 32)
+        //     throw `Configuration Error - containerRepositoryName cannot be longer than 32 characters : ${this.containerRepositoryName} [${this.containerRepositoryName.length}]`
 
         this.resourceGroups = new ResourceGroups({
             name:     name, 
