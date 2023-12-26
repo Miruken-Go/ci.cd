@@ -34,5 +34,5 @@ jobs:
         submodules: 'recursive'
     - name: npm ci
       run: npm ci
-    - name: Run buildMiruken.js
-      run:  node ./deployment/buildMiruken.js 
+    - name: Run buildCICD.js
+      run:  node ./deployment/buildCICD.js 
