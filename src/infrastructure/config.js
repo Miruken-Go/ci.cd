@@ -173,11 +173,6 @@ export class Domain {
             instance: instance,
         })
 
-        this.b2c = new B2C({
-            name: name, 
-            env:  env
-        })
-
         if(opts.applications) {
             for (const application of opts.applications) {
                 this.applications.push((application instanceof Application)
@@ -204,6 +199,12 @@ export class Domain {
                         ...domain,
                         parent:       this,
                     }))
+            }
+        }
+
+        if (opts.resources) {
+            for(const [key, resource] of Object.entries(opts.resources)) {
+                this[key] = new resource(opts)
             }
         }
     }

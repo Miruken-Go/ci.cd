@@ -4,6 +4,7 @@ import { inspect } from 'node:util'
 import {
     Domain,
     Application,
+    B2C
 } from '#infrastructure/config.js'
 
 describe('Domain', function () {
@@ -61,9 +62,12 @@ describe('Domain', function () {
     const env = 'dev'
 
     let org = new Domain({
-        name:     'Major-League-Miruken',
-        env:      env,
-        location: 'CentralUs',
+        name:       'Major-League-Miruken',
+        env:        env,
+        location:   'CentralUs',
+        resources: {
+            b2c: B2C
+        }
     })
 
     let domain = new Domain({
