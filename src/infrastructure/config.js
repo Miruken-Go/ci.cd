@@ -79,7 +79,6 @@ export class Application {
     instance
     location
     parent
-    organization
     resourceGroups
     implicitFlow
     spa
@@ -91,14 +90,14 @@ export class Application {
     constructor (opts) {
         if (!opts.name)           throw new Error("name required")
         if (!opts.location)       throw new Error("location required")
-        if (!opts.organization)   throw new Error("organization required")
         if (!opts.resourceGroups) throw new Error("resourceGroups required")
+        if (!opts.parent)         throw new Error("parent required")
 
         const name         = opts.name
-        const organization = opts.organization
+        const parent       = opts.parent
 
         this.name           = name 
-        this.organization   = organization
+        this.parent         = parent
         this.location       = opts.location
         this.parent         = opts.parent
         this.env            = opts.env
@@ -109,7 +108,7 @@ export class Application {
         this.enrichApi      = opts.enrichApi    || false
         this.scopes         = opts.scopes       || ['Group', 'Role', 'Entitlement']
         this.secrets        = opts.secrets      || []
-        this.imageName      = `${organization.containerRepositoryName}.azurecr.io/${name}` 
+        this.imageName      = `${parent.containerRepositoryName}.azurecr.io/${name}` 
     }
 
     get containerAppName () {
@@ -130,54 +129,8 @@ export class Domain {
     name
     env
     instance
-    organization
-    applications = []
-
-    constructor (opts) {
-        if (!opts.name)         throw new Error("name required")
-        if (!opts.location)     throw new Error("location required")
-        if (!opts.organization) throw new Error("organization required")
-
-        const name     = opts.name
-        const env      = opts.env
-        const instance = opts.instance
-        const location = opts.location
-
-        this.name         = name
-        this.env          = env
-        this.instance     = instance
-        this.location     = location
-        this.organization = opts.organization
-
-        this.resourceGroups = new ResourceGroups({
-            name:     name,
-            env:      env,
-            instance: instance,
-        })
-
-        if(opts.applications) {
-            for (const application of opts.applications) {
-                this.applications.push((application instanceof Application)
-                    ? application
-                    : new Application({
-                        parent:         this,
-                        organization:   this.organization,
-                        env:            env, 
-                        instance:       instance,
-                        location:       location,
-                        resourceGroups: this.resourceGroups,
-                        ...application,
-                    }))
-            }
-        }
-    }
-}
-
-export class Organization {
-    name
-    env
-    instance
     location
+    parent
     gitRepositoryUrl
     containerRepositoryName
     resourceGroups
@@ -191,7 +144,7 @@ export class Organization {
 
         const name = opts.name.replace(/[^A-Za-z0-9]/g, "").toLowerCase()
         if (name.length > 19)
-            throw `Configuration Error - Organization name cannot be longer than 19 characters : ${name} [${name.length}]`
+            throw `Configuration Error - Domain name cannot be longer than 19 characters : ${name} [${name.length}]`
 
         const env = opts.env
         if (env && env.length > 4)
@@ -199,11 +152,13 @@ export class Organization {
 
         const instance = opts.instance
         const location = opts.location
+        const parent   = opts.parent
 
         this.name             = name
         this.env              = env 
         this.instance         = instance
         this.location         = location
+        this.parent           = parent
         this.gitRepositoryUrl = opts.gitRepositoryUrl
 
         this.containerRepositoryName = `${name}global`
@@ -228,13 +183,12 @@ export class Organization {
                 this.applications.push((application instanceof Application)
                     ? application
                     : new Application({
-                        parent:         this,
-                        organization:   this,
                         env:            env, 
                         instance:       instance,
                         location:       location,
                         resourceGroups: this.resourceGroups,
                         ...application,
+                        parent:         this,
                     }))
             }
         }
@@ -244,11 +198,11 @@ export class Organization {
                 this.domains.push((domain instanceof Domain)
                     ? domain
                     : new Domain({
-                        organization: this,
                         env:          env,
                         instance:     instance,
                         location:     location, 
                         ...domain,
+                        parent:       this,
                     }))
             }
         }
@@ -272,7 +226,7 @@ export class Organization {
         let application  = this.applications.find(a => a.enrichApi)
         if (application) return application
 
-        throw new Error(`No application defined in organization where enrichApi = true`)
+        throw new Error(`No application defined in domain where enrichApi = true`)
     }
 
     getApplicationByName(name) {

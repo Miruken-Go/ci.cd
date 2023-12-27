@@ -4,8 +4,11 @@
   "description": "Shared tools for ci.cd",
   "main": "src/index.js",
   "type": "module",
+  "imports": {
+    "#infrastructure/*": "./src/infrastructure/*"
+  },
   "scripts": {
-    "test": "mocha",
+    "test": "mocha \"test/**/*.tests.js\"",
     "coverage": "c8 npm run test"
   },
   "author": "provenstyle",
