@@ -7,11 +7,6 @@ import {
 } from '#infrastructure/config.js'
 
 describe('Domain', function () {
-    let org = new Domain({
-        name:     'majorLeagueMiruken',
-        env:      'dev',
-        location: 'CentralUs',
-    })
 
     it('exitsts', function () { 
         expect(Domain).to.exist
@@ -63,8 +58,34 @@ describe('Domain', function () {
         })
     })
 
-    it('has a name', function () {
+    const env = 'dev'
+
+    let org = new Domain({
+        name:     'Major-League-Miruken',
+        env:      env,
+        location: 'CentralUs',
+    })
+
+    let domain = new Domain({
+        name:         'billing',
+        parent:       org,
+        location:     'CentralUs',
+        env:          env,
+        applications: [
+            {name: 'app1'}
+        ]
+    })
+
+    it('org has a name', function () {
         expect(org.name).to.equal('majorleaguemiruken')
+    })
+
+    it('domain has a name', function () {
+        expect(domain.name).to.equal('billing')
+    })
+
+    it('nested domain has a reference to the parent', function () {
+        expect(domain.parent).to.equal(org)
     })
 
     it('resourceGroups', function () {
@@ -104,27 +125,28 @@ describe('Domain', function () {
         })
     })
 
-    describe('applications', () => {
+    it('has array of applications', function () {
+        expect(domain.applications.length).to.equal(1)
+    })
 
+    it('application instance can be  passed in ', function () {
         const app = new Application({
             name:           'a',
             location:       'l',
             parent:         {},
-            resourceGroups: [],
-            parent:         {}
+            resourceGroups: []
         })
-        const org = new Domain({
-            name:     'Major-League-Miruken',
-            env:      'dev',
-            location: 'CentralUs',
+        const domain = new Domain({
+            name:         'n',
+            location:     'l',
             applications: [
                 app
             ]
         })
-        expect(org.applications[0]).to.be.equal(app)
+        expect(domain.applications[0]).to.be.equal(app)
     })
 
-    describe('domain', () => {
+    describe('child domains', () => {
         it('can take existing domain', () => {
             const domain = new Domain({
                 name:           'a',
@@ -156,78 +178,6 @@ describe('Domain', function () {
             })
             expect(org.domains.length).to.equal(1)
         })
-    })
-})
-
-describe('Domain', function () {
-
-    const env = 'dev'
-
-    let org = new Domain({
-        name:     'Major-League-Miruken',
-        env:      env,
-        location: 'CentralUs',
-    })
-
-    let domain = new Domain({
-        name:         'billing',
-        parent:       org,
-        location:     'CentralUs',
-        env:          env,
-        applications: [
-            {name: 'app1'}
-        ]
-    })
-
-    describe('validation', () => {
-        it('name is required', function () {
-            expect(() => { new Domain({})}).to.throw('name required')
-        })
-        it('location is required', function () {
-            expect(() => { new Domain({
-                name: 'name'
-            })}).to.throw('location required')
-        })
-        it('valid object is valid', function () {
-            new Domain({
-                name:         'n',
-                location:     'l',
-                parent:       {},
-            })
-        })
-    })
-
-    it('exitsts', function () { 
-        expect(Domain).to.exist
-    })
-
-    it('has a name', function () {
-        expect(domain.name).to.equal('billing')
-    })
-
-    it('has a reference to the parent', function () {
-        expect(domain.parent).to.equal(org)
-    })
-
-    it('has array of applications', function () {
-        expect(domain.applications.length).to.equal(1)
-    })
-
-    it('application instance can be  passed in ', function () {
-        const app = new Application({
-            name:           'a',
-            location:       'l',
-            parent:         {},
-            resourceGroups: []
-        })
-        const domain = new Domain({
-            name:         'n',
-            location:     'l',
-            applications: [
-                app
-            ]
-        })
-        expect(domain.applications[0]).to.be.equal(app)
     })
 })
 
