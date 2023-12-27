@@ -11,19 +11,19 @@ variables.requireEnvVariables([
 ])
 
 export class B2C {
-    organization
+    domain
     graph
 
-    constructor (organization, b2cDeploymentPipelineClientId) {
-        if (!organization)                  throw new Error('organization is required')
+    constructor (domain, b2cDeploymentPipelineClientId) {
+        if (!domain)                  throw new Error('domain is required')
         if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
 
-        this.organization = organization
-        this.graph        = new Graph(organization, b2cDeploymentPipelineClientId)
+        this.domain = domain
+        this.graph        = new Graph(domain, b2cDeploymentPipelineClientId)
     }
 
     async getWellKnownOpenIdConfiguration() {
-        const uri = this.organization.b2c.openIdConfigurationUrl
+        const uri = this.domain.b2c.openIdConfigurationUrl
         console.log(`Getting: ${uri}`)
         const result = await axios.get(uri)
             .catch(function (error) {
@@ -93,8 +93,8 @@ export class B2C {
     }
 
     async configureAppRegistrations() { 
-        await this.configureAppRegistration(this.organization)
-        for (const domain of this.organization.domains) {
+        await this.configureAppRegistration(this.domain)
+        for (const domain of this.domain.domains) {
             await this.configureAppRegistration(domain)
         }
     }
@@ -107,7 +107,7 @@ export class B2C {
         const appRegistration = await this.createOrUpdateApplication({
             displayName:    domain.name,
             signInAudience: 'AzureADandPersonalMicrosoftAccount',
-            identifierUris: [ `https://${this.organization.b2c.name}.onmicrosoft.com/${domain.name}` ],
+            identifierUris: [ `https://${this.domain.b2c.name}.onmicrosoft.com/${domain.name}` ],
             api: {
                 requestedAccessTokenVersion: 2,
                 oauth2PermissionScopes: [
@@ -220,8 +220,8 @@ export class B2C {
         const proxyIdentityExperienceFrameworkClient = await this.getApplicationByName('ProxyIdentityExperienceFramework')
         if(!proxyIdentityExperienceFrameworkClient) throw new Error("ProxyIdentityExperienceFramework application not found. Check that the App Registration was created in B2C and check the name spelling and casing.")
 
-        const containerAppName = this.organization.enrichApiApplication.containerAppName
-        const appUrl = await az.getContainerAppUrl(containerAppName, this.organization.resourceGroups.instance)
+        const containerAppName = this.domain.enrichApiApplication.containerAppName
+        const appUrl = await az.getContainerAppUrl(containerAppName, this.domain.resourceGroups.instance)
         if(!appUrl) throw new Error(`authorizationServiceUrl could not be calculated. The AppUrl for ${containerAppName} container app was not found. The default application environment instance needs to be deployed before common configuration can run.`)
 
         const authorizationServiceUrl = `https://${appUrl}/enrich`
@@ -240,7 +240,7 @@ export class B2C {
                 const filePath = path.join(customPoliciesDirectory, file)
                 let xml        = fs.readFileSync(filePath,{encoding: 'utf-8'}) 
 
-                xml = xml.replace(/{B2C_DOMAIN_NAME}/g,                              this.organization.b2c.domainName)
+                xml = xml.replace(/{B2C_DOMAIN_NAME}/g,                              this.domain.b2c.domainName)
                 xml = xml.replace(/{IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g,       identityExperienceFrameworkClient.appId)
                 xml = xml.replace(/{PROXY_IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g, proxyIdentityExperienceFrameworkClient.appId)
                 xml = xml.replace(/{AUTHORIZATION_SERVICE_URL}/g,                    authorizationServiceUrl)

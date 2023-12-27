@@ -4,17 +4,17 @@ import * as querystring from 'node:querystring'
 import axios            from 'axios'
 
 export class Graph {
-    organization
+    domain
     b2cDeploymentPipelineClientId
     _token  = undefined
 
     static APP_ID = "00000003-0000-0000-c000-000000000000"
 
-    constructor (organization, b2cDeploymentPipelineClientId) {
-        if (!organization)                  throw new Error('organization is required')
+    constructor (domain, b2cDeploymentPipelineClientId) {
+        if (!domain)                  throw new Error('domain is required')
         if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
 
-        this.organization                  = organization
+        this.domain                        = domain
         this.b2cDeploymentPipelineClientId = b2cDeploymentPipelineClientId
     }
 
@@ -23,11 +23,11 @@ export class Graph {
 
         await secrets.requireSecrets([
             'b2cDeploymentPipelineClientSecret',
-        ], this.organization.keyVaultName)
+        ], this.domain.keyVaultName)
 
         logging.printEnvironmentSecrets(secrets)
 
-        const uri=`https://login.microsoftonline.com/${this.organization.b2c.domainName}/oauth2/v2.0/token`
+        const uri=`https://login.microsoftonline.com/${this.domain.b2c.domainName}/oauth2/v2.0/token`
         const result = await axios.post(uri, querystring.stringify({
             client_id:     this.b2cDeploymentPipelineClientId,
             scope:         'https://graph.microsoft.com/.default',

@@ -12,8 +12,8 @@ export function printObject (text, object) {
     console.log(inspect(object, { depth: null }))
 }
 
-export function printOrganization (object) {
-    printObject("Organization Configuration", object)
+export function printDomain (object) {
+    printObject("Domain Configuration", object)
 }
 
 export function printEnvironmentVariables (config) {
