@@ -1,3 +1,6 @@
+function stripCharacters (string) {
+    return string.replace(/[^A-Za-z0-9]/g, "").toLowerCase()
+}
 
 export class ResourceGroups {
 
@@ -45,7 +48,7 @@ export class B2C {
     constructor (opts) {
         if (!opts.name) throw new Error("name required")
 
-        this.cleanedName = opts.name.replace(/[^A-Za-z0-9]/g, "").toLowerCase()
+        this.cleanedName = stripCharacters(opts.name)
         this.env         = opts.env
         this.profile     = opts.profile || 'B2C_1A_SIGNUP_SIGNIN'
     }
@@ -70,6 +73,42 @@ export class B2C {
 
     get openIdConfigurationUrl () {
         return `https://${this.name}.b2clogin.com/${this.name}.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=${this.profile}`
+    }
+}
+
+export class ContainerRepository {
+    name
+
+    constructor (opts) {
+        if (!opts.name) throw new Error("name required")
+
+        const name = stripCharacters(opts.name)
+
+        this.name = `${name}global`
+
+        if (this.name.length > 32)
+             throw `Configuration Error - ContainerRepository.Name cannot be longer than 32 characters : ${this.name} [${this.name.length}]`
+    }
+}
+
+export class KeyVault {
+    constructor (opts) {
+        if (!opts.name) throw new Error("name required")
+        this.opts = opts
+    }
+
+    get name () {
+        if (!this.opts.env) throw new Error("env required")
+
+        const name = stripCharacters(this.opts.name)
+        const env  = stripCharacters(this.opts.env)
+
+
+        const keyVaultName = `${name}-${env}` 
+        if (keyVaultName.length > 24)
+            throw new Error(`Configuration Error - keyVault name cannot be longer than 24 characters : ${keyVaultName} [${keyVaultName.length}]`)
+
+        return keyVaultName
     }
 }
 
@@ -142,7 +181,7 @@ export class Domain {
         if (!opts.name)     throw new Error("name required")
         if (!opts.location) throw new Error("location required")
 
-        const name = opts.name.replace(/[^A-Za-z0-9]/g, "").toLowerCase()
+        const name = stripCharacters(opts.name)
         if (name.length > 19)
             throw `Configuration Error - Domain name cannot be longer than 19 characters : ${name} [${name.length}]`
 
@@ -160,12 +199,6 @@ export class Domain {
         this.location         = location
         this.parent           = parent
         this.gitRepositoryUrl = opts.gitRepositoryUrl
-
-        this.containerRepositoryName = `${name}global`
-
-        //Good validation logic, but cannot be hit the way the code is currently written.
-        // if (this.containerRepositoryName.length > 32)
-        //     throw `Configuration Error - containerRepositoryName cannot be longer than 32 characters : ${this.containerRepositoryName} [${this.containerRepositoryName.length}]`
 
         this.resourceGroups = new ResourceGroups({
             name:     name, 
@@ -207,20 +240,6 @@ export class Domain {
                 this[key] = new resource(opts)
             }
         }
-    }
-
-    requireEnv () {
-        if (!this.env) throw new Error("env required")
-    }
-
-    get keyVaultName () {
-        this.requireEnv()
-
-        const name = `${this.name}-${this.env}` 
-        if (name.length > 24)
-            throw new Error(`Configuration Error - keyVaultName cannot be longer than 24 characters : ${name} [${name.length}]`)
-
-        return name
     }
 
     get enrichApiApplication () {
