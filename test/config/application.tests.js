@@ -50,6 +50,20 @@ describe('Application', function () {
                 resourceGroups: []
             })
         })
+        it('throws exception when no containerRepository is configured', () => {
+            expect(() => {
+                const orgWithNoCR = new Domain({
+                    name:     'n',
+                    location: 'l',
+                })
+                new Application({
+                    name:           'n',
+                    location:       'l',
+                    parent:         orgWithNoCR,
+                    resourceGroups: []
+                })
+            }).to.throw('Could not find a configured containerRepository')
+        })
     })
 
     describe('containerAppName', () => {
