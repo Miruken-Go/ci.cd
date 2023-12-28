@@ -19,7 +19,7 @@ handle(async () => {
     logging.header("Building ci.cd")
 
     await bash.execute(`
-        npm run test
+        npm run coverage
     `)
 
     //This docker container is running docker in docker from github actions
