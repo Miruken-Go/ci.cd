@@ -23,7 +23,7 @@ export class Graph {
 
         await secrets.requireSecrets([
             'b2cDeploymentPipelineClientSecret',
-        ], this.domain.keyVaultName)
+        ], this.domain.keyVault.name)
 
         logging.printEnvironmentSecrets(secrets)
 

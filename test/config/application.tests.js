@@ -1,13 +1,23 @@
 import { expect }  from 'chai'
 
 import {
+    Domain,
     Application,
     ResourceGroups,
+    ContainerRepository,                
 } from '#infrastructure/config.js'
 
 describe('Application', function () {
     it('exitsts', function () { 
         expect(Application).to.exist
+    })
+
+    const org = new Domain({
+        name:     'n',
+        location: 'l',
+        resources: {
+            containerRepository: ContainerRepository,
+        }
     })
 
     describe('validation', () => {
@@ -36,17 +46,18 @@ describe('Application', function () {
             new Application({
                 name:           'n',
                 location:       'l',
-                parent:         {},
+                parent:         org,
                 resourceGroups: []
             })
         })
     })
 
     describe('containerAppName', () => {
+
         const appWithoutEnv = new Application({
             name:         'n',
             location:     'l',
-            parent:       {},
+            parent:       org,
             resourceGroups: new ResourceGroups({
                 name: 'n'
             })
@@ -56,7 +67,7 @@ describe('Application', function () {
             name:         'n',
             location:     'l',
             env:          'e',
-            parent:       {},
+            parent:       org, 
             resourceGroups: new ResourceGroups({
                 name: 'n'
             })
@@ -67,7 +78,7 @@ describe('Application', function () {
             location:     'l',
             env:          'e',
             instance:     'i',
-            parent:       {},
+            parent:       org,
             resourceGroups: new ResourceGroups({
                 name: 'n'
             })
@@ -78,7 +89,7 @@ describe('Application', function () {
             location:     'l',
             env:          'e',
             instance:     'i',
-            parent:       {},
+            parent:       org,
             resourceGroups: new ResourceGroups({
                 name: 'n'
             })

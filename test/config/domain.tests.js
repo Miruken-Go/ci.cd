@@ -117,7 +117,13 @@ describe('Domain', function () {
             const app = new Application({
                 name:           'a',
                 location:       'l',
-                parent:         {},
+                parent:         new Domain({
+                    name:     'n',
+                    location: 'l',
+                    resources: {
+                        containerRepository: ContainerRepository,
+                    }
+                }),
                 resourceGroups: []
             })
             const domain = new Domain({
@@ -184,6 +190,11 @@ describe('Instantiating Domain', function () {
         location: 'CentralUs',
         env:      'dev',
         instance: 'ci',
+        resources: {
+            b2c:                 B2C,
+            containerRepository: ContainerRepository,
+            keyVault:            KeyVault,
+        },
         applications: [
             {
                 name:      'enrich-srv', 
@@ -255,6 +266,19 @@ describe('Instantiating Domain', function () {
     it('throw exception when application is not found', () => {
         org.applications[0].enrichApi = false
         expect(() => {org.getApplicationByName('I dont exist')}).to.throw('Application with name I dont exist not found')
+    })
+    describe('application imageName', () => {
+        it('domain has image name', () => {
+            const app = org.applications[0]
+            expect(app.imageName).to.equal('majorleaguemirukenglobal.azurecr.io/enrich-srv')
+        })
+    })
+    describe('child domain application imageName', () => {
+        it('domain has image name', () => {
+            const app = org.domains[0].applications[0]
+            console.log(app.name)
+            expect(app.imageName).to.equal('majorleaguemirukenglobal.azurecr.io/billingui')
+        })
     })
 })
 

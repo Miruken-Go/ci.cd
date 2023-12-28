@@ -147,7 +147,17 @@ export class Application {
         this.enrichApi      = opts.enrichApi    || false
         this.scopes         = opts.scopes       || ['Group', 'Role', 'Entitlement']
         this.secrets        = opts.secrets      || []
-        this.imageName      = `${parent.containerRepositoryName}.azurecr.io/${name}` 
+
+        let domain = parent
+        while(domain) {
+            if (domain.containerRepository) {
+                this.imageName = `${domain.containerRepository.name}.azurecr.io/${name}` 
+                break
+            } else {
+                domain = domain.parent
+            }
+        }
+        if (!this.imageName) throw new Error('Could not find a configured containerRepository')
     }
 
     get containerAppName () {
@@ -171,7 +181,6 @@ export class Domain {
     location
     parent
     gitRepositoryUrl
-    containerRepositoryName
     resourceGroups
     b2c
     domains      = []
@@ -206,6 +215,12 @@ export class Domain {
             instance: instance,
         })
 
+        if (opts.resources) {
+            for(const [key, resource] of Object.entries(opts.resources)) {
+                this[key] = new resource(opts)
+            }
+        }
+
         if(opts.applications) {
             for (const application of opts.applications) {
                 this.applications.push((application instanceof Application)
@@ -232,12 +247,6 @@ export class Domain {
                         ...domain,
                         parent:       this,
                     }))
-            }
-        }
-
-        if (opts.resources) {
-            for(const [key, resource] of Object.entries(opts.resources)) {
-                this[key] = new resource(opts)
             }
         }
     }
