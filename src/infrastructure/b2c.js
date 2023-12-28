@@ -15,11 +15,11 @@ export class B2C {
     graph
 
     constructor (domain, b2cDeploymentPipelineClientId) {
-        if (!domain)                  throw new Error('domain is required')
+        if (!domain)                        throw new Error('domain is required')
         if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
 
         this.domain = domain
-        this.graph        = new Graph(domain, b2cDeploymentPipelineClientId)
+        this.graph  = new Graph(domain, b2cDeploymentPipelineClientId)
     }
 
     async getWellKnownOpenIdConfiguration() {

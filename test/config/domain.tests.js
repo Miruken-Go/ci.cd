@@ -71,6 +71,10 @@ describe('Domain', function () {
             name:       'Major-League-Miruken',
             env:        env,
             location:   'CentralUs',
+            bootstrapUsers: [
+                'foo@bar.com',
+                'bizz@buzz.com',
+            ],
             resources: {
                 b2c:                 B2C,
                 containerRepository: ContainerRepository,
@@ -88,11 +92,8 @@ describe('Domain', function () {
             ]
         })
 
-        it('org has a name', function () {
-            expect(org.name).to.equal('majorleaguemiruken')
-        })
-
         it('domain has a name', function () {
+            expect(org.name).to.equal('majorleaguemiruken')
             expect(domain.name).to.equal('billing')
         })
 
@@ -100,7 +101,7 @@ describe('Domain', function () {
             expect(domain.parent).to.equal(org)
         })
 
-        it('resourceGroups', function () {
+        it('domain has resourceGroups', function () {
             expect(org.resourceGroups).to.exist
         })
 
@@ -108,6 +109,9 @@ describe('Domain', function () {
             expect(org.resourceGroups.global).to.equal('majorleaguemiruken-global')
         })
 
+        it('domain has bootstrapUsers', function () {
+            expect(org.bootstrapUsers.length).to.equal(2)
+        })
 
         it('has array of applications', function () {
             expect(domain.applications.length).to.equal(1)

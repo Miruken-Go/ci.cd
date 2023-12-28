@@ -183,8 +183,9 @@ export class Domain {
     gitRepositoryUrl
     resourceGroups
     b2c
-    domains      = []
-    applications = []
+    domains        = []
+    applications   = []
+    bootstrapUsers = []
 
     constructor (opts) {
         if (!opts.name)     throw new Error("name required")
@@ -208,6 +209,7 @@ export class Domain {
         this.location         = location
         this.parent           = parent
         this.gitRepositoryUrl = opts.gitRepositoryUrl
+        this.bootstrapUsers   = opts.bootstrapUsers
 
         this.resourceGroups = new ResourceGroups({
             name:     name, 
