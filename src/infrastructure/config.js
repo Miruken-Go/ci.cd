@@ -91,6 +91,21 @@ export class ContainerRepository {
     }
 }
 
+export class Storage {
+    name
+
+    constructor (opts) {
+        if (!opts.name) throw new Error("name required")
+        if (!opts.env) throw new Error("env required")
+
+        const name = stripCharacters(opts.name)
+        this.name = `${name}${opts.env}${opts?.instance ?? ''}`
+
+        if (this.name.length > 24)
+             throw `Configuration Error - Storage.Name cannot be longer than 24 characters : ${this.name} [${this.name.length}]`
+    }
+}
+
 export class KeyVault {
     constructor (opts) {
         if (!opts.name) throw new Error("name required")
