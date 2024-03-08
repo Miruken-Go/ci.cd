@@ -10,7 +10,7 @@ import * as git          from '#infrastructure/git.js'
 import * as go           from '#infrastructure/go.js'
 import * as graph        from '#infrastructure/graph.js'
 import * as handler      from '#infrastructure/handler.js'
-import * as keyVault     from '#infrastructure/keyvaultz.js'
+import * as keyVault     from '#infrastructure/keyVault.js'
 import * as logging      from '#infrastructure/logging.js'
 import * as users        from '#infrastructure/users.js'
 

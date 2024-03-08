@@ -1,5 +1,5 @@
 import * as logging     from './logging.js'
-import { secrets }      from './keyvaultz.js'
+import { secrets }      from './keyVault.js'
 import * as querystring from 'node:querystring'
 import axios            from 'axios'
 
