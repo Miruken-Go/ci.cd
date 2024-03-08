@@ -19,6 +19,6 @@ Concepts:
 Installation:
 
 ```
-    npm install --save github:miruken-go/ci.cd#v0.1.17
+    npm install --save github:miruken-go/ci.cd#<desired-tagged-version>
 ```
 
