@@ -36,7 +36,7 @@ handle(async () => {
 
     await git.tagAndPush(gitTag)
 
-    await gh.sendRepositoryDispatches('built-cicd', {
-        cicdVersion: gitTag
-    })
+    // await gh.sendRepositoryDispatches('built-cicd', {
+    //     cicdVersion: gitTag
+    // })
 })
