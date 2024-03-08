@@ -1,6 +1,5 @@
 {
   "name": "ci.cd",
-  "version": "1.0.0",
   "description": "Shared tools for ci.cd",
   "main": "src/index.js",
   "type": "module",
@@ -12,7 +11,7 @@
     "coverage": "c8 npm run test"
   },
   "author": "provenstyle",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.6.0"
   },
