@@ -1,13 +1,19 @@
-import { header }    from './logging.js'
-import { Graph }     from './graph.js'
+import { header } from './logging'
+import { Graph }  from './graph'
+import { Domain } from './config'
+import { B2CNames } from './config'
 
 export class Users { 
+    domain:   Domain
+    b2cNames: B2CNames
+    graph:    Graph
 
-    constructor(domain, b2cDeploymentPipelineClientId ) {
+    constructor (domain: Domain, b2cNames: B2CNames, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string) {
         if (!domain)                        throw new Error('domain is required')
         if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
-        this.domain = domain
-        this.graph  = new Graph(domain, b2cDeploymentPipelineClientId)
+        this.domain   = domain
+        this.b2cNames = b2cNames
+        this.graph    = new Graph(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret)
     }
 
     async configureBootstrapUsers() {
@@ -30,7 +36,7 @@ export class Users {
                 const createdUser = await this.graph.post('/users', {
                     identities: [{
                         signInType:       "emailAddress",
-                        issuer:           this.domain.b2c.domainName,
+                        issuer:           this.b2cNames.domainName,
                         issuerAssignedId: email
                     }],
                     userType:          "Member",

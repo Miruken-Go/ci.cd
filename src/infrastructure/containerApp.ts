@@ -1,8 +1,23 @@
-import * as bash from '#infrastructure/bash.js'
+import * as bash from './bash'
+import { Application } from './config'
 
-export async function getImageTagForActiveRevision(application) { 
+interface Container {
+    image: string
+}
+
+interface Revision {
+    properties: {
+        active: boolean
+        trafficWeight: number
+        template: {
+            containers: Container[]
+        }
+    }
+}
+
+export async function getImageTagForActiveRevision(application: Application) { 
     try {
-        const revisions = await bash.json(`
+        const revisions: Revision[] = await bash.json(`
             az containerapp revision list                 \
                 -n ${application.containerAppName}        \
                 -g ${application.resourceGroups.instance} \

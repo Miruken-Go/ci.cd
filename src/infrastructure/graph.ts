@@ -1,37 +1,35 @@
-import * as logging     from './logging.js'
-import { secrets }      from './keyVault.js'
-import * as querystring from 'node:querystring'
-import axios            from 'axios'
+import * as querystring     from 'node:querystring'
+import axios                from 'axios'
+import { Domain, B2CNames } from './config'
 
 export class Graph {
-    domain
-    b2cDeploymentPipelineClientId
-    _token  = undefined
+    domain:                            Domain
+    b2cNames:                          B2CNames
+    b2cDeploymentPipelineClientId:     string
+    b2cDeploymentPipelineClientSecret: string
+    _token:                            string | undefined  = undefined
 
     static APP_ID = "00000003-0000-0000-c000-000000000000"
 
-    constructor (domain, b2cDeploymentPipelineClientId) {
-        if (!domain)                  throw new Error('domain is required')
-        if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
+    constructor (domain: Domain, b2cNames: B2CNames, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string) {
+        if (!domain)                            throw new Error('domain is required')
+        if (!b2cDeploymentPipelineClientId)     throw new Error('b2cDeploymentPipelineClientId is required')
+        if (!b2cDeploymentPipelineClientSecret) throw new Error('b2cDeploymentPipelineClientSecret is required')
 
-        this.domain                        = domain
-        this.b2cDeploymentPipelineClientId = b2cDeploymentPipelineClientId
+        this.domain                            = domain
+        this.b2cNames                          = b2cNames
+        this.b2cDeploymentPipelineClientId     = b2cDeploymentPipelineClientId
+        this.b2cDeploymentPipelineClientSecret = b2cDeploymentPipelineClientSecret
     }
 
     async getToken() {
         if (this._token) return this._token;
 
-        await secrets.requireSecrets([
-            'b2cDeploymentPipelineClientSecret',
-        ], this.domain.keyVault.name)
-
-        logging.printEnvironmentSecrets(secrets)
-
-        const uri=`https://login.microsoftonline.com/${this.domain.b2c.domainName}/oauth2/v2.0/token`
+        const uri=`https://login.microsoftonline.com/${this.b2cNames.domainName}/oauth2/v2.0/token`
         const result = await axios.post(uri, querystring.stringify({
             client_id:     this.b2cDeploymentPipelineClientId,
             scope:         'https://graph.microsoft.com/.default',
-            client_secret: secrets.b2cDeploymentPipelineClientSecret,
+            client_secret: this.b2cDeploymentPipelineClientSecret,
             grant_type:    'client_credentials'
         }));
         console.log('Retrieved token')
@@ -39,16 +37,8 @@ export class Graph {
         return this._token;
     }
 
-    logError(error){
-        if(error.response){
-            console.log(`status: ${error.response.status}`)
-            console.log(`error.response.data: ${JSON.stringify(error.response.data)}`)
-        }
-    }
-
-    async get(endpoint, version) {
-        const vs = version || 'v1.0'
-        const uri = `https://graph.microsoft.com/${vs}${endpoint}`
+    async get(endpoint: string, version: string = 'v1.0') {
+        const uri = `https://graph.microsoft.com/${version}${endpoint}`
         console.log(`Getting: ${uri}`)
 
         const options = {
@@ -66,9 +56,8 @@ export class Graph {
         }
     }
 
-    async post(endpoint, json, version) {
-        const vs = version || 'v1.0'
-        const uri = `https://graph.microsoft.com/${vs}${endpoint}`
+    async post(endpoint: string, json: any, version: string = 'v1.0') {
+        const uri = `https://graph.microsoft.com/${version}${endpoint}`
         console.log(`Posting: ${uri}`)
 
         const options = {
@@ -87,9 +76,8 @@ export class Graph {
         }
     }
 
-    async patch(endpoint, json, version) {
-        const vs = version || 'v1.0'
-        const uri = `https://graph.microsoft.com/${vs}${endpoint}`
+    async patch(endpoint: string, json: object, version: string = 'v1.0') {
+        const uri = `https://graph.microsoft.com/${version}${endpoint}`
         console.log(`Patching: ${uri}`)
 
         const options = {
@@ -108,8 +96,8 @@ export class Graph {
         }
     }
 
-    //https://learn.microsoft.com/en-us/graph/api/trustframework-put-trustframeworkpolicy?view=graph-rest-beta
-    async updateTrustFrameworkPolicy(policyId, xml) {
+    // https://learn.microsoft.com/en-us/graph/api/trustframework-put-trustframeworkpolicy?view=graph-rest-beta
+    async updateTrustFrameworkPolicy(policyId: string, xml: string) {
         const uri = `https://graph.microsoft.com/beta/trustFramework/policies/${policyId}/$value`
         console.log(`Putting: ${uri}`)
 
@@ -130,4 +118,12 @@ export class Graph {
             throw error
         }
     }
+    
+    logError(error: any){
+        if(error.response){
+            console.log(`status: ${error.response.status}`)
+            console.log(`error.response.data: ${JSON.stringify(error.response.data)}`)
+        }
+    }
+
 }

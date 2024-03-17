@@ -1,22 +1,22 @@
 import { inspect } from 'node:util'
 
-export function header (text) {
+export function header (text: string) {
     const separator = "*********************************************************************"
     console.log(separator)
     console.log(text)
     console.log(separator)
 }
 
-export function printObject (text, object) {
+export function printObject (text: string, object: object) {
     header(text)
     console.log(inspect(object, { depth: null }))
 }
 
-export function printDomain (object) {
+export function printDomain (object: object) {
     printObject("Domain Configuration", object)
 }
 
-export function printEnvironmentVariables (config) {
+export function printEnvironmentVariables (config: object) {
     header('Environment Variables')
 
     for (const [key, value] of Object.entries(config)) {
@@ -33,7 +33,7 @@ export function printEnvironmentVariables (config) {
     }
 }
 
-export function printEnvironmentSecrets(config) {
+export function printEnvironmentSecrets(config: object) {
     header('Environment Secrets')
 
     for (const [key, value] of Object.entries(config)) {

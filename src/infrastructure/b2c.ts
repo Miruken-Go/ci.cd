@@ -1,34 +1,85 @@
-import * as logging  from './logging.js'
-import * as az       from './az.js'
-import { Graph }     from './graph.js'
-import { variables } from './envVariables.js'
+import * as logging  from './logging'
+import { AZ }        from './az'
+import { Graph }     from './graph'
 import * as fs       from 'node:fs'
 import * as path     from 'node:path'
 import axios         from 'axios'
+import { Domain, B2CNames, Application } from './config'
 
-variables.requireEnvVariables([
-    'env',
-])
+interface OAuthPermissionScope {
+    id:                      string
+    adminConsentDescription: string
+    adminConsentDisplayName: string
+    isEnabled:               boolean
+    type:                    string
+    value:                   string
+}
+
+interface ResourceAccess {
+    id:   string
+    type: string
+}                
+
+interface RequiredResourceAccess {
+    resourceAppId: string
+    resourceAccess: ResourceAccess[]
+}
+
+interface B2cApplication {
+    id?: string
+    appId?: string
+    displayName: string
+    signInAudience?: string
+    spa?: {
+        redirectUris: string[]
+    }
+    identifierUris?: string[]
+    api?: {
+        requestedAccessTokenVersion: number,
+        oauth2PermissionScopes: OAuthPermissionScope[]
+    }
+    requiredResourceAccess?: RequiredResourceAccess[]
+
+    web?: {
+        implicitGrantSettings: {
+            enableAccessTokenIssuance: boolean,
+            enableIdTokenIssuance:     boolean,
+        }
+    }
+}
 
 export class B2C {
     domain
     graph
+    b2cNames: B2CNames
+    az:       AZ
 
-    constructor (domain, b2cDeploymentPipelineClientId) {
+    constructor (
+        domain:                            Domain, 
+        b2cNames:                          B2CNames, 
+        tenantId:                          string, 
+        subscriptionId:                    string, 
+        deploymentPipelineClientId:        string, 
+        deploymentPipelineClientSecret:    string, 
+        b2cDeploymentPipelineClientId:     string, 
+        b2cDeploymentPipelineClientSecret: string
+    ) {
         if (!domain)                        throw new Error('domain is required')
         if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
 
-        this.domain = domain
-        this.graph  = new Graph(domain, b2cDeploymentPipelineClientId)
+        this.domain   = domain
+        this.b2cNames = b2cNames
+        this.graph    = new Graph(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret)
+        this.az       = new AZ(tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret)
     }
 
     async getWellKnownOpenIdConfiguration() {
-        const uri = this.domain.b2c.openIdConfigurationUrl
+        const uri = this.b2cNames.openIdConfigurationUrl
         console.log(`Getting: ${uri}`)
         const result = await axios.get(uri)
-            .catch(function (error) {
+            .catch((error) => {
                 console.log(`Failed to Get: ${uri}`)  
-                logError(error)
+                this.logError(error)
                 throw error
             });
     
@@ -36,35 +87,36 @@ export class B2C {
         return result.data
     }
 
-    async getApplications() {
+    async getApplications(): Promise<B2cApplication[]> {
         const result = await this.graph.get("/applications")
         return result.data.value
     }
 
-    async getApplicationById(id) {
+    async getApplicationById(id: string): Promise<B2cApplication> {
         const result = await this.graph.get(`/applications/${id}`)
         return result.data
     }
 
-    async getApplicationByName(displayName) {
+    async getApplicationByName(displayName: string): Promise<B2cApplication | undefined> {
         const applications = await this.getApplications()
         const application  =  applications.find(a => a.displayName === displayName)
         console.log(application)
         return application
     }
 
-    async updateApplication(id, manifest) {
+    async updateApplication(id: string, manifest: object) {
         console.log(`Updating existing application appId [${id}]`)
         await this.graph.patch(`/applications/${id}`, manifest)
         return await this.getApplicationById(id)
     }
 
-    async createOrUpdateApplication(manifest) {
+    async createOrUpdateApplication(manifest: B2cApplication) {
         const displayName = manifest.displayName
         const existing = await this.getApplicationByName(displayName)
 
         let application = undefined
         if (existing) {
+            if (!existing.id) throw new Error('Id required to update application')
             application = await this.updateApplication(existing.id, manifest)
         } else {
             console.log(`Creating application: ${displayName}`)
@@ -76,8 +128,9 @@ export class B2C {
         return application
     }
 
-    async addRedirectUris(id, uris) {
+    async addRedirectUris(id: string, uris: string[]) {
         const app = await this.getApplicationById(id)
+        if (!app?.spa?.redirectUris) return
         const redirectUris = [...app.spa.redirectUris]
         for (const uri of uris) {
             if (!redirectUris.includes(uri)) {
@@ -99,15 +152,15 @@ export class B2C {
         }
     }
 
-    async configureAppRegistration(domain) {
-        const GROUP_ID       = 'db580dbb-797c-4334-bf09-db802106accd'
-        const ROLE_ID        = '0ba8756b-c67c-4fd3-9d70-488fc8da3b55'
-        const ENTITLEMENT_ID = 'd748b2c9-a76b-47b2-8c7b-fa348fbb474d'
+    async configureAppRegistration(domain: Domain) {
+        const GROUP_ID: string       = 'db580dbb-797c-4334-bf09-db802106accd'
+        const ROLE_ID: string        = '0ba8756b-c67c-4fd3-9d70-488fc8da3b55'
+        const ENTITLEMENT_ID: string = 'd748b2c9-a76b-47b2-8c7b-fa348fbb474d'
         
         const appRegistration = await this.createOrUpdateApplication({
             displayName:    domain.name,
             signInAudience: 'AzureADandPersonalMicrosoftAccount',
-            identifierUris: [ `https://${this.domain.b2c.name}.onmicrosoft.com/${domain.name}` ],
+            identifierUris: [ `https://${this.b2cNames.name}.onmicrosoft.com/${domain.name}` ],
             api: {
                 requestedAccessTokenVersion: 2,
                 oauth2PermissionScopes: [
@@ -179,7 +232,7 @@ export class B2C {
 
         if (domain.applications.some(a => a.implicitFlow)) {
             console.log('Configure implicit flow')
-            const implicicteGrant = await this.createOrUpdateApplication({
+            const implicitGrant = await this.createOrUpdateApplication({
                 displayName: domain.name,
                 web: {
                     implicitGrantSettings: {
@@ -188,12 +241,12 @@ export class B2C {
                     }
                 }
             })
-            console.log(implicicteGrant)
+            console.log(implicitGrant)
         }
 
         if (domain.applications.some(a => a.spa)) {
             console.log('Configure spa')
-            const redirectUris = (['dev', 'qa'].includes(variables.env))
+            const redirectUris = (['dev', 'qa'].includes(this.domain.env))
                 ? [
                     'https://jwt.ms/',
                     'http://localhost:8080/oauth2-redirect.html',
@@ -209,19 +262,19 @@ export class B2C {
         }
     }
 
-    async configureCustomPolicies (customPoliciesDirectory) {
-        if (!customPoliciesDirectory) throw new Error('customPoliciesDirectory is requried')
+    async configureCustomPolicies (customPoliciesDirectory: string) {
+        if (!customPoliciesDirectory) throw new Error('customPoliciesDirectory is required')
         
         logging.header("Deploying B2C Configuration")
 
         const identityExperienceFrameworkClient = await this.getApplicationByName('IdentityExperienceFramework')
-        if(!identityExperienceFrameworkClient) throw new Error("IdentityExperienceFramework application not found. Check that the App Registration was created in B2C and check the name spelling and casing.")
+        if(!identityExperienceFrameworkClient || !identityExperienceFrameworkClient.appId) throw new Error("IdentityExperienceFramework application not found. Check that the App Registration was created in B2C and check the name spelling and casing.")
 
         const proxyIdentityExperienceFrameworkClient = await this.getApplicationByName('ProxyIdentityExperienceFramework')
-        if(!proxyIdentityExperienceFrameworkClient) throw new Error("ProxyIdentityExperienceFramework application not found. Check that the App Registration was created in B2C and check the name spelling and casing.")
+        if(!proxyIdentityExperienceFrameworkClient || !proxyIdentityExperienceFrameworkClient.appId) throw new Error("ProxyIdentityExperienceFramework application not found. Check that the App Registration was created in B2C and check the name spelling and casing.")
 
         const containerAppName = this.domain.enrichApiApplication.containerAppName
-        const appUrl = await az.getContainerAppUrl(containerAppName, this.domain.resourceGroups.instance)
+        const appUrl = await this.az.getContainerAppUrl(containerAppName, this.domain.resourceGroups.instance)
         if(!appUrl) throw new Error(`authorizationServiceUrl could not be calculated. The AppUrl for ${containerAppName} container app was not found. The default application environment instance needs to be deployed before common configuration can run.`)
 
         const authorizationServiceUrl = `https://${appUrl}/enrich`
@@ -240,12 +293,19 @@ export class B2C {
                 const filePath = path.join(customPoliciesDirectory, file)
                 let xml        = fs.readFileSync(filePath,{encoding: 'utf-8'}) 
 
-                xml = xml.replace(/{B2C_DOMAIN_NAME}/g,                              this.domain.b2c.domainName)
+                xml = xml.replace(/{B2C_DOMAIN_NAME}/g,                              this.b2cNames.domainName)
                 xml = xml.replace(/{IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g,       identityExperienceFrameworkClient.appId)
                 xml = xml.replace(/{PROXY_IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g, proxyIdentityExperienceFrameworkClient.appId)
                 xml = xml.replace(/{AUTHORIZATION_SERVICE_URL}/g,                    authorizationServiceUrl)
 
                 await this.graph.updateTrustFrameworkPolicy(policyId, xml)
         };
+    }
+
+    logError(error: any){
+        if(error.response){
+            console.log(`status: ${error.response.status}`)
+            console.log(`error.response.data: ${JSON.stringify(error.response.data)}`)
+        }
     }
 }

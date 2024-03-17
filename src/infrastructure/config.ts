@@ -1,10 +1,19 @@
-function stripCharacters (string) {
-    return string.replace(/[^A-Za-z0-9]/g, "").toLowerCase()
+interface Opts {
+    name:     string
+    env:      string
+    instance: string
+}
+
+function stripCharacters (input: string) {
+    return input.replace(/[^A-Za-z0-9]/g, "").toLowerCase()
 }
 
 export class ResourceGroups {
+    name:    string
+    env:     string
+    envInst: string
 
-    constructor (opts) {
+    constructor (opts: Opts) {
         if (!opts.name) throw new Error("name required")
 
         this.name    = opts.name.toLowerCase()
@@ -43,9 +52,16 @@ export class ResourceGroups {
     }
 }
 
-export class B2C {
+interface B2CNamesOpts extends Opts {
+    profile: string
+}
 
-    constructor (opts) {
+export class B2CNames {
+    cleanedName: string
+    env:         string
+    profile:     string
+
+    constructor (opts: B2CNamesOpts) {
         if (!opts.name) throw new Error("name required")
 
         this.cleanedName = stripCharacters(opts.name)
@@ -77,9 +93,9 @@ export class B2C {
 }
 
 export class ContainerRepository {
-    name
+    name: string
 
-    constructor (opts) {
+    constructor (opts: Opts) {
         if (!opts.name) throw new Error("name required")
 
         const name = stripCharacters(opts.name)
@@ -92,9 +108,9 @@ export class ContainerRepository {
 }
 
 export class Storage {
-    name
+    name: string
 
-    constructor (opts) {
+    constructor (opts: Opts) {
         if (!opts.name) throw new Error("name required")
         if (!opts.env) throw new Error("env required")
 
@@ -107,7 +123,9 @@ export class Storage {
 }
 
 export class KeyVault {
-    constructor (opts) {
+    opts: Opts
+
+    constructor (opts: Opts) {
         if (!opts.name) throw new Error("name required")
         this.opts = opts
     }
@@ -127,21 +145,32 @@ export class KeyVault {
     }
 }
 
-export class Application {
-    name
-    env
-    instance
-    location
-    parent
-    resourceGroups
-    implicitFlow
-    spa
-    enrichApi
-    scopes  = []
-    secrets = []
-    imageName
+interface ApplicationOpts extends Opts {
+    parent:         Domain
+    location:       string
+    resourceGroups: ResourceGroups
+    implicitFlow:   boolean
+    spa:            boolean
+    enrichApi:      boolean
+    scopes:         string[]
+    secrets:        string[]
+}
 
-    constructor (opts) {
+export class Application {
+    name:           string
+    env:            string
+    instance:       string
+    location:       string
+    parent:         Domain
+    resourceGroups: ResourceGroups
+    implicitFlow:   boolean
+    spa:            boolean
+    enrichApi:      boolean
+    scopes:         string[] = []
+    secrets:        string[] = []
+    imageName:      string   = ''
+
+    constructor (opts: ApplicationOpts) {
         if (!opts.name)           throw new Error("name required")
         if (!opts.location)       throw new Error("location required")
         if (!opts.resourceGroups) throw new Error("resourceGroups required")
@@ -163,7 +192,7 @@ export class Application {
         this.scopes         = opts.scopes       || ['Group', 'Role', 'Entitlement']
         this.secrets        = opts.secrets      || []
 
-        let domain = parent
+        let domain: Domain = parent
         while(domain) {
             if (domain.containerRepository) {
                 this.imageName = `${domain.containerRepository.name}.azurecr.io/${name}` 
@@ -172,7 +201,7 @@ export class Application {
                 domain = domain.parent
             }
         }
-        if (!this.imageName) throw new Error('Could not find a configured containerRepository')
+        if (this.imageName.length < 1) throw new Error('Could not find a configured containerRepository')
     }
 
     get containerAppName () {
@@ -189,20 +218,36 @@ export class Application {
     }
 }
 
-export class Domain {
-    name
-    env
-    instance
-    location
-    parent
-    gitRepositoryUrl
-    resourceGroups
-    b2c
-    domains        = []
-    applications   = []
-    bootstrapUsers = []
+interface DomainOpts extends Opts {
+    parent:           Domain
+    location:         string
+    gitRepositoryUrl: string
+    bootstrapUsers:   string[]
+    resources:        Record<string, Resource>
+    applications:     Application[] | ApplicationOpts[]
+    domains:          Domain[] | DomainOpts[]
+}
 
-    constructor (opts) {
+interface Resource {
+    new (opts: Opts): Resource
+    name: string
+}
+
+export class Domain {
+    name:                 string
+    env:                  string
+    instance:             string
+    location:             string
+    parent:               Domain
+    gitRepositoryUrl:     string
+    resourceGroups:       ResourceGroups
+    containerRepository?: ContainerRepository
+    domains:              Domain[]                 = []
+    applications:         Application[]            = []
+    bootstrapUsers:       string[]                 = []
+    resources:            Record<string, Resource> = {}
+
+    constructor (opts: DomainOpts) {
         if (!opts.name)     throw new Error("name required")
         if (!opts.location) throw new Error("location required")
 
@@ -234,7 +279,7 @@ export class Domain {
 
         if (opts.resources) {
             for(const [key, resource] of Object.entries(opts.resources)) {
-                this[key] = new resource(opts)
+                this.resources[key] = new resource(opts)
             }
         }
 
@@ -243,12 +288,8 @@ export class Domain {
                 this.applications.push((application instanceof Application)
                     ? application
                     : new Application({
-                        env:            env, 
-                        instance:       instance,
-                        location:       location,
-                        resourceGroups: this.resourceGroups,
                         ...application,
-                        parent:         this,
+                        parent: this,
                     }))
             }
         }
@@ -258,11 +299,8 @@ export class Domain {
                 this.domains.push((domain instanceof Domain)
                     ? domain
                     : new Domain({
-                        env:          env,
-                        instance:     instance,
-                        location:     location, 
                         ...domain,
-                        parent:       this,
+                        parent: this,
                     }))
             }
         }
@@ -275,7 +313,7 @@ export class Domain {
         throw new Error(`No application defined in domain where enrichApi = true`)
     }
 
-    getApplicationByName(name) {
+    getApplicationByName(name: string) {
         let application = this.applications.find(a => a.name === name)
         if (application) return application
 
