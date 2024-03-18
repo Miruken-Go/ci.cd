@@ -144,3 +144,63 @@ describe('KeyVault', () => {
         })
     })
 })
+
+describe('ResourceGroups', function () { 
+    it('exitsts', function () { 
+        expect(ResourceGroups).toBeDefined()
+    })
+
+    describe('with instance', function () {
+        const resourceGroups = new ResourceGroups({
+            name:     'majorleaguemiruken',
+            env:      'dev',
+            instance: 'ci'
+        })
+
+        it('global', function () {
+            expect(resourceGroups.global).toEqual('majorleaguemiruken-global')
+        })
+
+        it('common', function () {
+            expect(resourceGroups.common).toEqual('majorleaguemiruken-dev-common')
+        })
+
+        it('manual', function () {
+            expect(resourceGroups.manual).toEqual('majorleaguemiruken-dev-manual')
+        })
+
+        it('stable', function () {
+            expect(resourceGroups.stable).toEqual('majorleaguemiruken-dev')
+        })
+
+        it('instance', function () {
+            expect(resourceGroups.instance).toEqual('majorleaguemiruken-dev-ci')
+        })
+    })
+    describe('without instance', function () {
+        const resourceGroups = new ResourceGroups({
+            name:     'majorleaguemiruken',
+            env:      'dev'
+        })
+
+        it('global', function () {
+            expect(resourceGroups.global).toEqual('majorleaguemiruken-global')
+        })
+
+        it('common', function () {
+            expect(resourceGroups.common).toEqual('majorleaguemiruken-dev-common')
+        })
+
+        it('manual', function () {
+            expect(resourceGroups.manual).toEqual('majorleaguemiruken-dev-manual')
+        })
+
+        it('stable', function () {
+            expect(resourceGroups.stable).toEqual('majorleaguemiruken-dev')
+        })
+
+        it('instance', function () {
+            expect(resourceGroups.instance).toEqual('majorleaguemiruken-dev')
+        })
+    })
+})
