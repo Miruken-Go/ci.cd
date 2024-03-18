@@ -14,8 +14,6 @@ export class ResourceGroups {
     envInst?: string
 
     constructor (opts: Opts) {
-        if (!opts.name) throw new Error("name required")
-
         this.name    = opts.name.toLowerCase()
         this.env     = opts.env
         this.envInst = opts.instance
@@ -145,10 +143,8 @@ export class KeyVault {
     }
 }
 
-interface ApplicationOpts extends Opts {
-    parent:         Domain
-    location:       string
-    resourceGroups: ResourceGroups
+interface ApplicationOpts {
+    name:           string,
     implicitFlow?:  boolean
     spa?:           boolean
     enrichApi?:     boolean
@@ -160,7 +156,6 @@ export class Application {
     name:           string
     env:            string
     instance?:      string
-    location:       string
     parent:         Domain
     resourceGroups: ResourceGroups
     implicitFlow:   boolean
@@ -170,22 +165,14 @@ export class Application {
     secrets:        string[] = []
     imageName:      string   = ''
 
-    constructor (opts: ApplicationOpts) {
-        if (!opts.name)           throw new Error("name required")
-        if (!opts.location)       throw new Error("location required")
-        if (!opts.resourceGroups) throw new Error("resourceGroups required")
-        if (!opts.parent)         throw new Error("parent required")
-
-        const name         = opts.name
-        const parent       = opts.parent
+    constructor (opts: ApplicationOpts, parent: Domain) {
+        const name          = opts.name
 
         this.name           = name 
         this.parent         = parent
-        this.location       = opts.location
-        this.parent         = opts.parent
-        this.env            = opts.env
-        this.instance       = opts.instance
-        this.resourceGroups = opts.resourceGroups
+        this.resourceGroups = parent.resourceGroups
+        this.env            = parent.env
+        this.instance       = parent.instance
         this.implicitFlow   = opts.implicitFlow || false
         this.spa            = opts.spa          || false
         this.enrichApi      = opts.enrichApi    || false
@@ -223,9 +210,9 @@ interface DomainOpts extends Opts {
     location:         string
     gitRepositoryUrl: string
     bootstrapUsers?:  string[]
-    resources?:       Record<string, ResourceConstructor>
+    resources?:       Record<string, Resource>
     applications:     Application[] | ApplicationOpts[]
-    domains:          Domain[] | DomainOpts[]
+    domains?:         Domain[] | DomainOpts[]
 }
 
 interface ResourceConstructor {
@@ -239,7 +226,7 @@ interface Resource {
 export class Domain {
     name:                 string
     env:                  string
-    instance?:             string
+    instance?:            string
     location:             string
     parent?:              Domain
     gitRepositoryUrl:     string
@@ -284,18 +271,17 @@ export class Domain {
 
         if (opts.resources) {
             for(const [key, resource] of Object.entries(opts.resources)) {
-                this.resources[key] = new resource(opts)
+                this.resources[key] = resource
             }
         }
 
         if(opts.applications) {
             for (const application of opts.applications) {
-                this.applications.push((application instanceof Application)
-                    ? application
-                    : new Application({
-                        ...application,
-                        parent: this,
-                    }))
+                this.applications.push(
+                    (application instanceof Application)
+                        ? application
+                        : new Application(application, this)
+                )
             }
         }
 

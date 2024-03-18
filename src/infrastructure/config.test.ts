@@ -7,20 +7,14 @@ import {
     KeyVault
 } from './config'
 
-const opts: Opts = {
-    env:      'e',
-    name:     'n'
-}
-
-const resourceGroups = new ResourceGroups(opts)
-
 describe('Application', function () {
     it('exists', function () { 
         expect(Application).toBeDefined()
     })
 
     const org = new Domain({
-        ...opts,
+        env:              'e',
+        name:             'n',
         location:         'l',
         gitRepositoryUrl: 'g',
         applications:     [],
@@ -34,17 +28,13 @@ describe('Application', function () {
         it('throws exception when no containerRepository is configured', () => {
             expect(() => {
                 const orgWithNoCR = new Domain({
-                    ...opts,
+                    env:              'e',
+                    name:             'n',
                     location:         'l',
                     gitRepositoryUrl: 'g',
-                    applications:     [],
-                    domains:          [],
-                })
-                new Application({
-                    ...opts,
-                    location: 'l',
-                    parent:   orgWithNoCR,
-                    resourceGroups: resourceGroups,
+                    applications: [{
+                        name: 'n'
+                    }],
                 })
             }).toThrow('Could not find a configured containerRepository')
         })
@@ -52,29 +42,47 @@ describe('Application', function () {
 
     describe('containerAppName', () => {
 
-        const appWithEnv = new Application({
-            ...opts,
-            resourceGroups,
-            location: 'l',
-            parent:   org, 
+        const domain = new Domain({
+            env:              'e',
+            name:             'n',
+            location:         'l',
+            gitRepositoryUrl: 'g',
+            applications:     [],
+            domains:          [],
+            resources: {
+                containerRepository: ContainerRepository,
+            }
         })
 
-        const appWithEnvAndInst = new Application({
-            ...opts,
-            resourceGroups,
-            location: 'l',
-            instance: 'i',
-            parent:   org,
+        const domainWithInst = new Domain({
+            env:              'e',
+            instance:         'i',
+            name:             'n',
+            location:         'l',
+            gitRepositoryUrl: 'g',
+            applications:     [],
+            domains:          [],
+            resources: {
+                containerRepository: ContainerRepository,
+            }
         })
+
+        const resourceGroups = new ResourceGroups({
+            env: 'e',
+            name: 'n'
+        })
+
+        const appWithEnv = new Application({ 
+            name: 'n' 
+        }, domain) 
+
+        const appWithEnvAndInst = new Application({ 
+            name: 'n' 
+        }, domainWithInst)
 
         const appWithLongName = new Application({
-            ...opts,
-            resourceGroups,
-            name:     '123456789012345678901234567890',
-            instance: 'i',
-            location: 'l',
-            parent:   org,
-        })
+            name: '123456789012345678901234567890'
+        }, domainWithInst)
 
         it('with env', () => {
             expect(appWithEnv.containerAppName).toEqual('n-e')
@@ -96,7 +104,10 @@ describe('ContainerRepository', () => {
     })
     describe('validation', function () {
         it('valid ContainerRepository throws no exceptions', function () {
-            new ContainerRepository(opts)
+            new ContainerRepository({
+                env: 'e',
+                name: 'n',
+            })
         })
         it('name cannot be more than 32 characters', function () {
             expect(()=>{new ContainerRepository({
@@ -108,7 +119,7 @@ describe('ContainerRepository', () => {
 
     describe('valid ContainerRepository instance', () => {
         const cr = new ContainerRepository({
-            ...opts,
+            env:  'e',
             name: 'My-Name'
         })
         it('strips invalid characters', () => {
