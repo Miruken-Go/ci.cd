@@ -1,7 +1,7 @@
-interface Opts {
+export interface Opts {
     name:     string
-    env:      string
-    instance: string
+    env:       string
+    instance?: string
 }
 
 function stripCharacters (input: string) {
@@ -9,9 +9,9 @@ function stripCharacters (input: string) {
 }
 
 export class ResourceGroups {
-    name:    string
-    env:     string
-    envInst: string
+    name:     string
+    env:      string
+    envInst?: string
 
     constructor (opts: Opts) {
         if (!opts.name) throw new Error("name required")
@@ -149,17 +149,17 @@ interface ApplicationOpts extends Opts {
     parent:         Domain
     location:       string
     resourceGroups: ResourceGroups
-    implicitFlow:   boolean
-    spa:            boolean
-    enrichApi:      boolean
-    scopes:         string[]
-    secrets:        string[]
+    implicitFlow?:  boolean
+    spa?:           boolean
+    enrichApi?:     boolean
+    scopes?:        string[]
+    secrets?:       string[]
 }
 
 export class Application {
     name:           string
     env:            string
-    instance:       string
+    instance?:      string
     location:       string
     parent:         Domain
     resourceGroups: ResourceGroups
@@ -192,10 +192,10 @@ export class Application {
         this.scopes         = opts.scopes       || ['Group', 'Role', 'Entitlement']
         this.secrets        = opts.secrets      || []
 
-        let domain: Domain = parent
+        let domain: Domain | undefined = parent
         while(domain) {
-            if (domain.containerRepository) {
-                this.imageName = `${domain.containerRepository.name}.azurecr.io/${name}` 
+            if (domain.resources['containerRepository']) {
+                this.imageName = `${domain.resources['containerRepository'].name}.azurecr.io/${name}` 
                 break
             } else {
                 domain = domain.parent
@@ -219,26 +219,29 @@ export class Application {
 }
 
 interface DomainOpts extends Opts {
-    parent:           Domain
+    parent?:          Domain
     location:         string
     gitRepositoryUrl: string
-    bootstrapUsers:   string[]
-    resources:        Record<string, Resource>
+    bootstrapUsers?:  string[]
+    resources?:       Record<string, ResourceConstructor>
     applications:     Application[] | ApplicationOpts[]
     domains:          Domain[] | DomainOpts[]
 }
 
-interface Resource {
+interface ResourceConstructor {
     new (opts: Opts): Resource
+}
+
+interface Resource {
     name: string
 }
 
 export class Domain {
     name:                 string
     env:                  string
-    instance:             string
+    instance?:             string
     location:             string
-    parent:               Domain
+    parent?:              Domain
     gitRepositoryUrl:     string
     resourceGroups:       ResourceGroups
     containerRepository?: ContainerRepository
@@ -269,7 +272,9 @@ export class Domain {
         this.location         = location
         this.parent           = parent
         this.gitRepositoryUrl = opts.gitRepositoryUrl
-        this.bootstrapUsers   = opts.bootstrapUsers
+        if (opts.bootstrapUsers) {
+            this.bootstrapUsers = opts.bootstrapUsers
+        }
 
         this.resourceGroups = new ResourceGroups({
             name:     name, 
