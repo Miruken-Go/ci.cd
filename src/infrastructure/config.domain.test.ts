@@ -96,70 +96,47 @@ describe('Domain', function () {
             gitRepositoryUrl: 'g',
             applications: [
                 {
-                    name: 'app1',
+                    name: 'app1'
                 }
             ]
         })
 
-//         it('domain has a name', function () {
-//             expect(org.name).to.equal('majorleaguemiruken')
-//             expect(domain.name).to.equal('billing')
-//         })
+        it('domain has a name', function () {
+            expect(org.name).toEqual('majorleaguemiruken')
+            expect(domain.name).toEqual('billing')
+        })
 
-//         it('nested domain has a reference to the parent', function () {
-//             expect(domain.parent).to.equal(org)
-//         })
+        it('nested domain has a reference to the parent', function () {
+            expect(domain.parent).toEqual(org)
+        })
 
-//         it('domain has resourceGroups', function () {
-//             expect(org.resourceGroups).toBeDefined()
-//         })
+        it('domain has resourceGroups', function () {
+            expect(org.resourceGroups).toBeDefined()
+        })
 
-//         it('globalResourceGroup', function () {
-//             expect(org.resourceGroups.global).to.equal('majorleaguemiruken-global')
-//         })
+        it('globalResourceGroup', function () {
+            expect(org.resourceGroups.global).toEqual('majorleaguemiruken-global')
+        })
 
-//         it('domain has bootstrapUsers', function () {
-//             expect(org.bootstrapUsers.length).to.equal(2)
-//         })
+        it('domain has bootstrapUsers', function () {
+            expect(org.bootstrapUsers.length).toEqual(2)
+        })
 
-//         it('has array of applications', function () {
-//             expect(domain.applications.length).to.equal(1)
-//         })
+        it('has array of applications', function () {
+            expect(domain.applications.length).toEqual(1)
+        })
 
-//         it('application instance can be  passed in ', function () {
-//             const app = new Application({
-//                 name:           'a',
-//                 location:       'l',
-//                 parent:         new Domain({
-//                     name:     'n',
-//                     location: 'l',
-//                     resources: {
-//                         containerRepository: ContainerRepository,
-//                     }
-//                 }),
-//                 resourceGroups: []
-//             })
-//             const domain = new Domain({
-//                 name:         'n',
-//                 location:     'l',
-//                 applications: [
-//                     app
-//                 ]
-//             })
-//             expect(domain.applications[0]).toEqual(app)
-//         })
-
-//         describe('resources', () => {
-//             it('b2c', function () {
-//                 expect(org.b2c).toBeDefined()
-//             })
-//             it('containerRepository name', function () {
-//                 expect(org.containerRepository.name).to.equal('majorleaguemirukenglobal')
-//             })
-//             it('keyVault name', function () {
-//                 expect(org.keyVault.name).toEqual('majorleaguemiruken-dev')
-//             })
-//         })
+        describe('resources', () => {
+            it('b2c', function () {
+                expect(org.resources.b2c).toBeDefined()
+            })
+            it('containerRepository name', function () {
+                expect(org.resources.containerRepository.name).toEqual('majorleaguemirukenglobal')
+            })
+            it('keyVault name', function () {
+                expect(org.resources.keyVault.name).toEqual('majorleaguemiruken-dev')
+            })
+        })
     })
 
 //     describe('child domains', () => {
@@ -192,7 +169,7 @@ describe('Domain', function () {
 //                     }
 //                 ]
 //             })
-//             expect(org.domains.length).to.equal(1)
+//             expect(org.domains.length).toEqual(1)
 //         })
 //     })
 })
@@ -283,14 +260,14 @@ describe('Domain', function () {
 //     describe('application imageName', () => {
 //         it('domain has image name', () => {
 //             const app = org.applications[0]
-//             expect(app.imageName).to.equal('majorleaguemirukenglobal.azurecr.io/enrich-srv')
+//             expect(app.imageName).toEqual('majorleaguemirukenglobal.azurecr.io/enrich-srv')
 //         })
 //     })
 //     describe('child domain application imageName', () => {
 //         it('domain has image name', () => {
 //             const app = org.domains[0].applications[0]
 //             console.log(app.name)
-//             expect(app.imageName).to.equal('majorleaguemirukenglobal.azurecr.io/billingui')
+//             expect(app.imageName).toEqual('majorleaguemirukenglobal.azurecr.io/billingui')
 //         })
 //     })
 // })

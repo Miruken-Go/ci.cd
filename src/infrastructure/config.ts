@@ -205,22 +205,18 @@ export class Application {
     }
 }
 
+interface Resource {
+    name: string
+}
+
 interface DomainOpts extends Opts {
     parent?:          Domain
     location:         string
     gitRepositoryUrl: string
     bootstrapUsers?:  string[]
     resources?:       Record<string, Resource>
-    applications:     Application[] | ApplicationOpts[]
+    applications:     ApplicationOpts[]
     domains?:         Domain[] | DomainOpts[]
-}
-
-interface ResourceConstructor {
-    new (opts: Opts): Resource
-}
-
-interface Resource {
-    name: string
 }
 
 export class Domain {
