@@ -139,39 +139,25 @@ describe('Domain', function () {
         })
     })
 
-//     describe('child domains', () => {
-//         it('can take existing domain', () => {
-//             const domain = new Domain({
-//                 name:           'a',
-//                 location:       'l',
-//                 parent:         {},
-//             })
-//             const org = new Domain({
-//                 name:     'Major-League-Miruken',
-//                 env:      'dev',
-//                 location: 'CentralUs',
-//                 domains: [
-//                     domain
-//                 ]
-//             })
-//             expect(org.domains[0]).toEqual(domain)
-//         })
-//         it('can take domain object literal', () => {
-//             const org = new Domain({
-//                 name:     'Major-League-Miruken',
-//                 env:      'dev',
-//                 location: 'CentralUs',
-//                 domains: [
-//                     {
-//                         name:           'a',
-//                         location:       'l',
-//                         parent:         {},
-//                     }
-//                 ]
-//             })
-//             expect(org.domains.length).toEqual(1)
-//         })
-//     })
+    describe('child domains', () => {
+        it('are created', () => {
+            const org = new Domain({
+                name:     'Major-League-Miruken',
+                env:      'dev',
+                location: 'CentralUs',
+                gitRepositoryUrl: 'g',
+                domains: [
+                    {
+                        name:             'a',
+                        env:              'e',
+                        location:         'l',
+                        gitRepositoryUrl: 'g'
+                    }
+                ]
+            })
+            expect(org.domains.length).toEqual(1)
+        })
+    })
 })
 
 // describe('Instantiating Domain', function () {

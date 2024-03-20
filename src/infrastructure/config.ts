@@ -225,8 +225,8 @@ interface DomainOpts extends Opts {
     gitRepositoryUrl: string
     bootstrapUsers?:  string[]
     resources?:       Record<string, Resource>
-    applications:     ApplicationOpts[]
-    domains?:         Domain[] | DomainOpts[]
+    applications?:    ApplicationOpts[]
+    domains?:         DomainOpts[]
 }
 
 export class Domain {
@@ -283,11 +283,7 @@ export class Domain {
 
         if(opts.applications) {
             for (const application of opts.applications) {
-                this.applications.push(
-                    (application instanceof Application)
-                        ? application
-                        : new Application(application, this)
-                )
+                this.applications.push(new Application(application, this))
             }
         }
 
