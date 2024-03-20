@@ -36,63 +36,69 @@ describe('Application', function () {
                         name: 'n'
                     }],
                 })
-            }).toThrow('Could not find a configured containerRepository')
+            }).toThrow('Could not find a configured ContainerRepository')
         })
     })
 
     describe('containerAppName', () => {
-
-        const domain = new Domain({
-            env:              'e',
-            name:             'n',
-            location:         'l',
-            gitRepositoryUrl: 'g',
-            applications:     [],
-            domains:          [],
-            resources: {
-                containerRepository: ContainerRepository,
-            }
-        })
-
-        const domainWithInst = new Domain({
-            env:              'e',
-            instance:         'i',
-            name:             'n',
-            location:         'l',
-            gitRepositoryUrl: 'g',
-            applications:     [],
-            domains:          [],
-            resources: {
-                containerRepository: ContainerRepository,
-            }
-        })
-
         const resourceGroups = new ResourceGroups({
             env: 'e',
             name: 'n'
         })
 
-        const appWithEnv = new Application({ 
-            name: 'n' 
-        }, domain) 
-
-        const appWithEnvAndInst = new Application({ 
-            name: 'n' 
-        }, domainWithInst)
-
-        const appWithLongName = new Application({
-            name: '123456789012345678901234567890'
-        }, domainWithInst)
-
         it('with env', () => {
+            const domain = new Domain({
+                env:              'e',
+                name:             'n',
+                location:         'l',
+                gitRepositoryUrl: 'g',
+                applications:     [],
+                domains:          [],
+                resources: {
+                    containerRepository: new ContainerRepository({env: 'e', name: 'n'}),
+                }
+            })
+            const appWithEnv = new Application({
+                name: 'n'
+            }, domain)
             expect(appWithEnv.containerAppName).toEqual('n-e')
         })
 
         it('with env and instance', () => {
+            const domainWithInst = new Domain({
+                env:              'e',
+                instance:         'i',
+                name:             'n',
+                location:         'l',
+                gitRepositoryUrl: 'g',
+                applications:     [],
+                domains:          [],
+                resources: {
+                    containerRepository: new ContainerRepository({env: 'e', name: 'n'}),
+                }
+            })
+            const appWithEnvAndInst = new Application({
+                name: 'n'
+            }, domainWithInst)
             expect(appWithEnvAndInst.containerAppName).toEqual('n-e-i')
         })
 
         it('name cannot be greater than 32 characters', () => {
+            const domainWithInst = new Domain({
+                env:              'e',
+                instance:         'i',
+                name:             'n',
+                location:         'l',
+                gitRepositoryUrl: 'g',
+                applications:     [],
+                domains:          [],
+                resources: {
+                    containerRepository: new ContainerRepository({env: 'e', name: 'n'}),
+                }
+            })
+            const appWithLongName = new Application({
+                name: '123456789012345678901234567890'
+            }, domainWithInst)
             expect(() => appWithLongName.containerAppName).toThrow("Configuration Error - containerAppName cannot be longer than 32 characters")
         })
     })

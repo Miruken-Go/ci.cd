@@ -179,16 +179,26 @@ export class Application {
         this.scopes         = opts.scopes       || ['Group', 'Role', 'Entitlement']
         this.secrets        = opts.secrets      || []
 
-        let domain: Domain | undefined = parent
-        while(domain) {
-            if (domain.resources['containerRepository']) {
-                this.imageName = `${domain.resources['containerRepository'].name}.azurecr.io/${name}` 
-                break
-            } else {
-                domain = domain.parent
-            }
+        const containerRepositories = this.resourcesByType(ContainerRepository)
+        if (containerRepositories.length) {
+            this.imageName = `${containerRepositories[0].name}.azurecr.io/${name}`
+        } else {
+            throw new Error('Could not find a configured ContainerRepository')
         }
-        if (this.imageName.length < 1) throw new Error('Could not find a configured containerRepository')
+    }
+
+    resourcesByType<T extends Resource> (resourceType: { new(opts?: any): T}): T[] {
+        let domain: Domain | undefined = this.parent
+        const targetResources: T[] = []
+        while(domain) {
+            for (const [_, resource] of Object.entries(domain.resources)) {
+                if (resource instanceof resourceType ) {
+                    targetResources.push(resource)
+                }
+            }
+            domain = domain.parent
+        }
+        return targetResources
     }
 
     get containerAppName () {
