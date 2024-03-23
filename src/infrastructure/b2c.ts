@@ -1,10 +1,10 @@
-import * as logging  from './logging'
-import { AZ }        from './az'
-import { Graph }     from './graph'
-import * as fs       from 'node:fs'
-import * as path     from 'node:path'
-import axios         from 'axios'
-import { Domain, B2CNames, Application } from './config'
+import * as logging         from './logging'
+import { AZ }               from './az'
+import { Graph }            from './graph'
+import { Domain, B2CNames } from './config'
+import * as fs              from 'node:fs'
+import * as path            from 'node:path'
+import axios                from 'axios'
 
 interface OAuthPermissionScope {
     id:                      string

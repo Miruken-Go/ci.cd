@@ -51,7 +51,7 @@ export class ResourceGroups {
 }
 
 interface B2CNamesOpts extends Opts {
-    profile: string
+    profile?: string
 }
 
 export class B2CNames {
@@ -60,24 +60,16 @@ export class B2CNames {
     profile:     string
 
     constructor (opts: B2CNamesOpts) {
-        if (!opts.name) throw new Error("name required")
-
         this.cleanedName = stripCharacters(opts.name)
         this.env         = opts.env
         this.profile     = opts.profile || 'B2C_1A_SIGNUP_SIGNIN'
     }
 
-    requireEnv () {
-        if (!this.env) throw new Error("env required")
-    }
-
     get name () {
-        this.requireEnv()
         return `${this.cleanedName}auth${this.env}`.toLowerCase()
     }
 
     get displayName () {
-        this.requireEnv()
         return `${this.cleanedName} auth ${this.env}`.toLowerCase()
     }
 

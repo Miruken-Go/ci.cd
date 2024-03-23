@@ -177,7 +177,7 @@ describe('Domain', function () {
                 'bizz@buzz.com',
             ],
             resources: {
-                b2c:                 new B2CNames({...orgOpts, profile: 'p'}),
+                b2c:                 new B2CNames(orgOpts),
                 containerRepository: new ContainerRepository(orgOpts),
                 keyVault:            new KeyVault(orgOpts),
             },
@@ -275,7 +275,7 @@ describe('Domain', function () {
             instance: 'ci',
             gitRepositoryUrl: 'http://',
             resources: {
-                b2c:                 new B2CNames({...domainOpts, profile: 'p'}),
+                b2c:                 new B2CNames(domainOpts),
                 containerRepository: new ContainerRepository(domainOpts),
                 keyVault:            new KeyVault(domainOpts),
             },
@@ -477,6 +477,49 @@ describe('ResourceGroups', function () {
 
         it('instance', function () {
             expect(resourceGroups.instance).toEqual('majorleaguemiruken-dev')
+        })
+    })
+})
+
+describe('B2CNames', function () { 
+    it('exitsts', function () { 
+        expect(B2CNames).toBeDefined()
+    })
+
+    describe('valid b2c instance', function(){
+
+        const b2c = new B2CNames({
+            name:    'Major-League-Miruken',
+            env:     'dev'
+        })
+
+        it('makes names lowercase and removes special characters', function () {
+            expect(b2c.name).toEqual('majorleaguemirukenauthdev')
+        })
+        it('b2cDisplayName', function () {
+            expect(b2c.displayName).toEqual('majorleaguemiruken auth dev')
+        })
+        it('b2cDomainName', function () {
+            expect(b2c.domainName).toEqual('majorleaguemirukenauthdev.onmicrosoft.com')
+        })
+        it('openIdConfigurationUrl', function () {
+            expect(b2c.openIdConfigurationUrl).toEqual('https://majorleaguemirukenauthdev.b2clogin.com/majorleaguemirukenauthdev.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_SIGNUP_SIGNIN')
+        })
+        it('default profile', function () {
+            expect(b2c.profile).toEqual('B2C_1A_SIGNUP_SIGNIN')
+        })
+    })
+
+    describe('valid b2c instance', function(){
+
+        const b2c = new B2CNames({
+            name:    'Major-League-Miruken',
+            env:     'dev',
+            profile: 'p'
+        })
+
+        it('accepts a configurable profile', function () {
+            expect(b2c.profile).toEqual('p')
         })
     })
 })

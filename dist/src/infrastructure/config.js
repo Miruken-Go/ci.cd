@@ -6,8 +6,6 @@ function stripCharacters(input) {
 }
 class ResourceGroups {
     constructor(opts) {
-        if (!opts.name)
-            throw new Error("name required");
         this.name = opts.name.toLowerCase();
         this.env = opts.env;
         this.envInst = opts.instance;
@@ -41,22 +39,14 @@ class ResourceGroups {
 exports.ResourceGroups = ResourceGroups;
 class B2CNames {
     constructor(opts) {
-        if (!opts.name)
-            throw new Error("name required");
         this.cleanedName = stripCharacters(opts.name);
         this.env = opts.env;
         this.profile = opts.profile || 'B2C_1A_SIGNUP_SIGNIN';
     }
-    requireEnv() {
-        if (!this.env)
-            throw new Error("env required");
-    }
     get name() {
-        this.requireEnv();
         return `${this.cleanedName}auth${this.env}`.toLowerCase();
     }
     get displayName() {
-        this.requireEnv();
         return `${this.cleanedName} auth ${this.env}`.toLowerCase();
     }
     get domainName() {
@@ -111,44 +101,41 @@ class KeyVault {
 }
 exports.KeyVault = KeyVault;
 class Application {
-    constructor(opts) {
+    constructor(opts, parent) {
         this.scopes = [];
         this.secrets = [];
         this.imageName = '';
-        if (!opts.name)
-            throw new Error("name required");
-        if (!opts.location)
-            throw new Error("location required");
-        if (!opts.resourceGroups)
-            throw new Error("resourceGroups required");
-        if (!opts.parent)
-            throw new Error("parent required");
         const name = opts.name;
-        const parent = opts.parent;
         this.name = name;
         this.parent = parent;
-        this.location = opts.location;
-        this.parent = opts.parent;
-        this.env = opts.env;
-        this.instance = opts.instance;
-        this.resourceGroups = opts.resourceGroups;
+        this.resourceGroups = parent.resourceGroups;
+        this.env = parent.env;
+        this.instance = parent.instance;
         this.implicitFlow = opts.implicitFlow || false;
         this.spa = opts.spa || false;
         this.enrichApi = opts.enrichApi || false;
         this.scopes = opts.scopes || ['Group', 'Role', 'Entitlement'];
         this.secrets = opts.secrets || [];
-        let domain = parent;
-        while (domain) {
-            if (domain.containerRepository) {
-                this.imageName = `${domain.containerRepository.name}.azurecr.io/${name}`;
-                break;
-            }
-            else {
-                domain = domain.parent;
-            }
+        const containerRepositories = this.resourcesByType(ContainerRepository);
+        if (containerRepositories.length) {
+            this.imageName = `${containerRepositories[0].name}.azurecr.io/${name}`;
         }
-        if (this.imageName.length < 1)
-            throw new Error('Could not find a configured containerRepository');
+        else {
+            throw new Error('Could not find a configured ContainerRepository');
+        }
+    }
+    resourcesByType(resourceType) {
+        let domain = this.parent;
+        const targetResources = [];
+        while (domain) {
+            for (const [_, resource] of Object.entries(domain.resources)) {
+                if (resource instanceof resourceType) {
+                    targetResources.push(resource);
+                }
+            }
+            domain = domain.parent;
+        }
+        return targetResources;
     }
     get containerAppName() {
         if (!this.env)
@@ -187,7 +174,9 @@ class Domain {
         this.location = location;
         this.parent = parent;
         this.gitRepositoryUrl = opts.gitRepositoryUrl;
-        this.bootstrapUsers = opts.bootstrapUsers;
+        if (opts.bootstrapUsers) {
+            this.bootstrapUsers = opts.bootstrapUsers;
+        }
         this.resourceGroups = new ResourceGroups({
             name: name,
             env: env,
@@ -195,14 +184,12 @@ class Domain {
         });
         if (opts.resources) {
             for (const [key, resource] of Object.entries(opts.resources)) {
-                this.resources[key] = new resource(opts);
+                this.resources[key] = resource;
             }
         }
         if (opts.applications) {
             for (const application of opts.applications) {
-                this.applications.push((application instanceof Application)
-                    ? application
-                    : new Application(Object.assign(Object.assign({}, application), { parent: this })));
+                this.applications.push(new Application(application, this));
             }
         }
         if (opts.domains) {

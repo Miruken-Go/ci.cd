@@ -1,7 +1,6 @@
-import { header } from './logging'
-import { Graph }  from './graph'
-import { Domain } from './config'
-import { B2CNames } from './config'
+import { header }           from './logging'
+import { Graph }            from './graph'
+import { Domain, B2CNames } from './config'
 
 export class Users { 
     domain:   Domain
