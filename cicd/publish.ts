@@ -1,9 +1,11 @@
-import * as bash        from '../src/infrastructure/bash'
-import * as logging     from '../src/infrastructure/logging'
-import { Git }          from '../src/infrastructure/git'
-import { handle }       from '../src/infrastructure/handler'
-import { EnvVariables } from '../src/infrastructure/envVariables'
-import { EnvSecrets }   from '../src/infrastructure/envSecrets'
+import * as cicd from '../src/index'
+
+const { handle }       = cicd.handler
+const { EnvVariables } = cicd.envVariables
+const { EnvSecrets }   = cicd.envSecrets
+const { Git }          = cicd.git
+const logging          = cicd.logging
+const bash             = cicd.bash
 
 handle(async () => {
     const variables = new EnvVariables()
