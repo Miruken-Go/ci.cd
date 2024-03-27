@@ -1,33 +1,34 @@
-import * as az           from './infrastructure/az'
-import * as b2c          from './infrastructure/b2c'
+import { AZ }            from './infrastructure/az'
+import { B2C }           from './infrastructure/b2c'
+import { EnvSecrets }    from './infrastructure/envSecrets'
+import { EnvVariables }  from './infrastructure/envVariables'
+import { Git }           from './infrastructure/git'
+import { Graph }         from './infrastructure/graph'
+import { handle }        from './infrastructure/handler'
+import { KeyVault }      from './infrastructure/keyVault'
+import { Users }         from './infrastructure/users'
 import * as bash         from './infrastructure/bash'
 import * as config       from './infrastructure/config'
 import * as containerApp from './infrastructure/containerApp'
-import * as envSecrets   from './infrastructure/envSecrets'
-import * as envVariables from './infrastructure/envVariables'
 import * as gh           from './infrastructure/gh'
-import * as git          from './infrastructure/git'
 import * as go           from './infrastructure/go'
-import * as graph        from './infrastructure/graph'
-import * as handler      from './infrastructure/handler'
-import * as keyVault     from './infrastructure/keyVault'
 import * as logging      from './infrastructure/logging'
-import * as users        from './infrastructure/users'
 
 export {
-    az,
-    b2c,
+    AZ,
+    B2C,
+    EnvSecrets,
+    EnvVariables,
+    Git,
+    Graph,
+    handle,
+    KeyVault,
+    Users,
+    
     bash,
     config,
     containerApp,
-    envSecrets,
-    envVariables,
     gh,
-    git,
     go,
-    graph,
-    handler,
-    keyVault,
     logging,
-    users
 }

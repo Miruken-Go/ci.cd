@@ -1,11 +1,11 @@
-import * as cicd from '../src/index'
-
-const { handle }       = cicd.handler
-const { EnvVariables } = cicd.envVariables
-const { EnvSecrets }   = cicd.envSecrets
-const { Git }          = cicd.git
-const logging          = cicd.logging
-const bash             = cicd.bash
+import {
+    handle,
+    EnvSecrets,
+    EnvVariables,
+    Git,
+    logging,
+    bash
+} from '../src/index'
 
 handle(async () => {
     const variables = new EnvVariables()
