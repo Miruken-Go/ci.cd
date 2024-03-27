@@ -16,7 +16,7 @@ export function printDomain (object: object) {
     printObject("Domain Configuration", object)
 }
 
-export function printEnvironmentVariables (config: object) {
+export function printVariables (config: object) {
     header('Environment Variables')
 
     for (const [key, value] of Object.entries(config)) {
@@ -33,7 +33,7 @@ export function printEnvironmentVariables (config: object) {
     }
 }
 
-export function printEnvironmentSecrets(config: object) {
+export function printSecrets(config: object) {
     header('Environment Secrets')
 
     for (const [key, value] of Object.entries(config)) {

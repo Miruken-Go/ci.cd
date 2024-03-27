@@ -11,13 +11,14 @@ handle(async () => {
     const variables = new EnvVariables()
         .required(['repositoryPath'])
         .variables
+
+    logging.printVariables(variables)
     
     const secrets = new EnvSecrets()
         .require(['ghToken'])
         .secrets
 
-    logging.printEnvironmentVariables(variables)
-    logging.printEnvironmentSecrets(secrets)
+    logging.printSecrets(secrets)
 
     logging.header("Publishing ci.cd")
 
@@ -29,8 +30,6 @@ handle(async () => {
         gittools/gitversion:5.12.0-alpine.3.14-6.0 /repo /showvariable SemVer
     `)
 
-    const gitTag = `v${rawVersion}`
-    console.log(`gitTag: [${gitTag}]`)
-    const git = new Git(secrets.ghToken)
-    await git.tagAndPush(gitTag)
+    await new Git(secrets.ghToken)
+        .tagAndPush(`v${rawVersion}`)
 })
