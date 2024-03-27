@@ -2,6 +2,7 @@ import { AZ }            from './infrastructure/az'
 import { B2C }           from './infrastructure/b2c'
 import { EnvSecrets }    from './infrastructure/envSecrets'
 import { EnvVariables }  from './infrastructure/envVariables'
+import { GH }            from './infrastructure/gh'
 import { Git }           from './infrastructure/git'
 import { Graph }         from './infrastructure/graph'
 import { handle }        from './infrastructure/handler'
@@ -10,7 +11,6 @@ import { Users }         from './infrastructure/users'
 import * as bash         from './infrastructure/bash'
 import * as config       from './infrastructure/config'
 import * as containerApp from './infrastructure/containerApp'
-import * as gh           from './infrastructure/gh'
 import * as go           from './infrastructure/go'
 import * as logging      from './infrastructure/logging'
 
@@ -19,6 +19,7 @@ export {
     B2C,
     EnvSecrets,
     EnvVariables,
+    GH,
     Git,
     Graph,
     handle,
@@ -28,7 +29,6 @@ export {
     bash,
     config,
     containerApp,
-    gh,
     go,
     logging,
 }

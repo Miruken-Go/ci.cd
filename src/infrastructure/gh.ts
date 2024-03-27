@@ -9,44 +9,58 @@ interface ghConfig {
     skipRepositoryDispatches: boolean
 }
 
-export async function sendRepositoryDispatch(eventType: string, payload: object, repository: string,  config: ghConfig) { 
-    if (config.skipRepositoryDispatches) return
+export class GH {
+    config: ghConfig
 
-    const repo = repository || config.repository
-    if (!repo) throw new Error("Repository name is required")
+    constructor(config: ghConfig) {
+        this.config = config
 
-    payload =  {
-        ...payload,
-        ref: config.ref,
-    }
-
-    //in this case the repo variable should be repositoryOwner/repositoryName
-    //for example Miruken-Go/demo.microservices
-    //the git.repository context variable is in this format
-    await axios.post(`https://api.github.com/repos/${repo}/dispatches`, {
-        event_type:     eventType,
-        client_payload: payload
-    }, {
-        headers: {
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${config.ghToken}`,
-            "X-GitHub-Api-Version": '2022-11-28'
+        if (process.env['GH_TOKEN']) {
+            throw new Error('The gh command line tool requires GH_TOKEN to be set as and environment variable.')
         }
-    })
+    }
 
-    console.log(`Sent [${eventType}] repository dispatch to [${repo}] with data [${JSON.stringify(payload)}]`)
-}
+    async sendRepositoryDispatch(eventType: string, payload: object, repository: string) { 
+        if (this.config.skipRepositoryDispatches) return
 
-export async function sendRepositoryDispatches(eventType: string, payload: object, config: ghConfig) { 
-    if (config.skipRepositoryDispatches) return
+        const repo = repository || this.config.repository
+        if (!repo) throw new Error("Repository name is required")
 
-    if (!process.env.GH_TOKEN) throw 'Environment variable required: GH_TOKEN'
+        payload =  {
+            ...payload,
+            ref: this.config.ref,
+        }
 
-    const repos = await bash.json(`
-        gh repo list ${config.repositoryOwner} --json name
-    `)
+        //in this case the repo variable should be repositoryOwner/repositoryName
+        //for example Miruken-Go/demo.microservices
+        //the git.repository context variable is in this format
+        await axios.post(`https://api.github.com/repos/${repo}/dispatches`, {
+            event_type:     eventType,
+            client_payload: payload
+        }, {
+            headers: {
+                Accept: 'application/vnd.github+json',
+                Authorization: `Bearer ${this.config.ghToken}`,
+                "X-GitHub-Api-Version": '2022-11-28'
+            }
+        })
 
-    for (const repo of repos) {
-        await sendRepositoryDispatch(eventType, payload, `${config.repositoryOwner}/${repo.name}`, config)
+        console.log(`Sent [${eventType}] repository dispatch to [${repo}] with data [${JSON.stringify(payload)}]`)
+    }
+
+    async sendRepositoryDispatches(eventType: string, payload: object) { 
+        if (this.config.skipRepositoryDispatches) return
+
+        if (!process.env.GH_TOKEN) throw 'Environment variable required: GH_TOKEN'
+
+        const repos = await bash.json(`
+            gh repo list ${this.config.repositoryOwner} --json name
+        `)
+
+        for (const repo of repos) {
+            await this.sendRepositoryDispatch(eventType, payload, `${this.config.repositoryOwner}/${repo.name}`)
+        }
     }
 }
+
+
