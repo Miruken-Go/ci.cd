@@ -26,9 +26,6 @@ describe('Application', function () {
     })
 
     describe('validation', () => {
-        it('fails when test fail', () => {
-            expect(true).toEqual(false)
-        })
         it('throws exception when no containerRepository is configured', () => {
             expect(() => {
                 const orgWithNoCR = new Domain({
