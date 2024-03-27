@@ -6,7 +6,7 @@ interface ghConfig {
     repository: string
     repositoryOwner: string
     ref: string
-    skipRepositoryDispatches: boolean
+    skipRepositoryDispatches?: boolean
 }
 
 export class GH {
@@ -21,7 +21,7 @@ export class GH {
     }
 
     async sendRepositoryDispatch(eventType: string, payload: object, repository: string) { 
-        if (this.config.skipRepositoryDispatches) return
+        if (this.config?.skipRepositoryDispatches == true) return
 
         const repo = repository || this.config.repository
         if (!repo) throw new Error("Repository name is required")
@@ -49,7 +49,7 @@ export class GH {
     }
 
     async sendRepositoryDispatches(eventType: string, payload: object) { 
-        if (this.config.skipRepositoryDispatches) return
+        if (this.config?.skipRepositoryDispatches == true) return
 
         if (!process.env.GH_TOKEN) throw 'Environment variable required: GH_TOKEN'
 
