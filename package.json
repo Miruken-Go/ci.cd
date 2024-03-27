@@ -2,14 +2,13 @@
   "name": "ci.cd",
   "description": "Shared tools for ci.cd",
   "main": "dist/src/index.js",
-  "type": "module",
   "scripts": {
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "publish": "npm run test; npm run build;  node ./dist/cicd/publish.js"
+   "publish": "npx ts-node ./cicd/publish.ts"
   },
   "author": "provenstyle",
   "license": "MIT",

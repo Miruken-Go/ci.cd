@@ -3,7 +3,7 @@ name: build ci.cd
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "develop"]
+    branches: [ "main" ]
 
 jobs:
   containerized_job:
@@ -27,7 +27,6 @@ jobs:
       with: 
         fetch-depth: 0
         submodules: 'recursive'
-    - name: npm ci
-      run: npm ci
-    - name: Run buildCICD.js
-      run:  node ./deployment/buildCICD.js 
+    - run:  npm ci
+    - run:  npm run test
+    - run:  npm run publish

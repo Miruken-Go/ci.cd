@@ -1,4 +1,4 @@
 .github
 test
 cicd
-dist/cicd
+coverage

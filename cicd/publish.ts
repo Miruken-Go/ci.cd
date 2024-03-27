@@ -27,11 +27,8 @@ handle(async () => {
         gittools/gitversion:5.12.0-alpine.3.14-6.0 /repo /showvariable SemVer
     `)
 
-    const git = new Git(secrets.ghToken)
-    await git.commitAll('Transpiled typescript to javascript')
-    await git.push()
-
     const gitTag = `v${rawVersion}`
     console.log(`gitTag: [${gitTag}]`)
+    const git = new Git(secrets.ghToken)
     await git.tagAndPush(gitTag)
 })
