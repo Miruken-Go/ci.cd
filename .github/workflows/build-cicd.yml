@@ -15,11 +15,7 @@ jobs:
       image: ghcr.io/miruken-go/demo.microservice.build:1699298856
       env:
         ghToken:         ${{ secrets.CI_CD_TOKEN }}
-        GH_TOKEN:        ${{ secrets.CI_CD_TOKEN }}
         repositoryPath:  ${{ github.workspace }}
-        repository:      ${{ github.repository }}
-        repositoryOwner: ${{ github.repository_owner }}
-        ref:             ${{ github.event.client_payload.ref || github.ref }}
         
     steps:
     - uses: actions/checkout@v4
