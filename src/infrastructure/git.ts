@@ -9,14 +9,16 @@ export class Git {
 
         console.log("Configuring git")
         this.configured = bash.execute(`
-            echo "setting working directory as git safe.directory $(pwd)"
-            git config --global --add safe.directory $(pwd)
+            git config --global --add safe.directory $(git rev-parse --show-toplevel)
             git config --global user.email "mirukenjs@gmail.com"
             git config --global user.name "buildpipeline"
             git config --global url."https://api:${ghToken}@github.com/".insteadOf "https://github.com/"
             git config --global url."https://ssh:${ghToken}@github.com/".insteadOf "ssh://git@github.com/"
             git config --global url."https://git:${ghToken}@github.com/".insteadOf "git@github.com:"
-        `)
+        `).then((out:string) => {
+            console.log('Configured git')
+            return out
+        })
     }
 
     async tagAndPush(tag: string) { 
