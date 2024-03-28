@@ -22,3 +22,7 @@ Installation:
     npm install --save github:miruken-go/ci.cd#<desired-tagged-version>
 ```
 
+Resources for configuring tsc
+
+https://dev.to/mbarzeev/hybrid-npm-package-through-typescript-compiler-tsc-150c
+

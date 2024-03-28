@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "allowJs": true,
+        "outDir": "dist/cjs",
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "**/*.test.js"]
+ }
