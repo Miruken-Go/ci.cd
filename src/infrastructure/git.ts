@@ -7,6 +7,7 @@ export class Git {
 
         console.log("Configuring git")
         bash.execute(`
+            echo "setting working directory as git safe.directory $(pwd)"
             git config --global --add safe.directory $(pwd)
             git config --global user.email "mirukenjs@gmail.com"
             git config --global user.name "buildpipeline"
