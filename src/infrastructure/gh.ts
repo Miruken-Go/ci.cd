@@ -15,7 +15,7 @@ export class GH {
     constructor(config: ghConfig) {
         this.config = config
 
-        if (process.env['GH_TOKEN']) {
+        if (!process.env['GH_TOKEN']) {
             throw new Error('The gh command line tool requires GH_TOKEN to be set as and environment variable.')
         }
     }
