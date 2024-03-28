@@ -2,11 +2,13 @@ import * as bash    from './bash'
 import * as logging from './logging'
 
 export class Git {
+    configured: Promise<string>
+
     constructor (ghToken: string) {
         if (!ghToken) throw new Error('ghToken is required')
 
         console.log("Configuring git")
-        bash.execute(`
+        this.configured = bash.execute(`
             echo "setting working directory as git safe.directory $(pwd)"
             git config --global --add safe.directory $(pwd)
             git config --global user.email "mirukenjs@gmail.com"
@@ -18,6 +20,8 @@ export class Git {
     }
 
     async tagAndPush(tag: string) { 
+        await this.configured
+
         logging.header("Tagging the commit")
 
         const existingTag = await bash.execute(`
@@ -39,6 +43,8 @@ export class Git {
     }
 
     async anyChanges() { 
+        await this.configured
+
         const status = await bash.execute(`
             git status
         `)
@@ -52,6 +58,8 @@ export class Git {
     }
 
     async commitAll(message: string) { 
+        await this.configured
+
         logging.header("Commiting Changes")
 
         await bash.execute(`
@@ -60,6 +68,8 @@ export class Git {
     }
 
     async push() { 
+        await this.configured
+
         logging.header("Pushing branch")
         await bash.execute(`
             git push origin
