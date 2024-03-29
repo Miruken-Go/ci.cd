@@ -32,6 +32,7 @@ handle(async () => {
         echo "git rev-parse: [$(git rev-parse --show-toplevel)]"
         git worktree list
         echo "--absolute-git-dir: [$(git rev-parse --absolute-git-dir)]"
+        echo "--show-cdup [$(git rev-parse --show-cdup)]"
         echo "Debugging *******************************"
     `)
 
