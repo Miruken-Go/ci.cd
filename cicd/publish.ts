@@ -22,6 +22,13 @@ handle(async () => {
 
     logging.header("Publishing ci.cd")
 
+    await bash.execute(`
+        echo "Debugging *******************************"
+        echo "git rev-parse: [$(git rev-parse --show-toplevel)]"
+        echo "pwd: [$(pwd)]"
+        echo "Debugging *******************************"
+    `)
+
     //This docker container is running docker in docker from github actions
     //Therefore using $(pwd) to get the working directory would be the working directory of the running container 
     //Not the working directory from the host system. So we need to pass in the repository path.
