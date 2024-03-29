@@ -5,8 +5,6 @@ export class Git {
     configured: Promise<string>
 
     constructor (ghToken: string) {
-        if (!ghToken) throw new Error('ghToken is required')
-
         console.log("Configuring git")
         this.configured = bash.execute(`
             git config --global --add safe.directory $(git rev-parse --show-toplevel)
@@ -17,7 +15,14 @@ export class Git {
             git config --global url."https://git:${ghToken}@github.com/".insteadOf "git@github.com:"
         `).then((out:string) => {
             console.log('Configured git')
-            return out
+            return bash.execute(`
+                cat ~/.gitconfig
+            `)
+        }).catch((e) => {
+            const message = 'Unexpected error occurred configuring git'
+            console.log(message)
+            console.log(e)
+            return message
         })
     }
 
