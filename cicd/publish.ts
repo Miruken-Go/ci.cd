@@ -26,11 +26,12 @@ handle(async () => {
         echo "Debugging *******************************"
         echo "pwd: [$(pwd)]"
         ls -la
-        echo "git rev-parse: [$(git rev-parse --show-toplevel)]"
+        echo "git rev-parse: [$(c)]"
         cd cicd
         echo "pwd: [$(pwd)]"
         echo "git rev-parse: [$(git rev-parse --show-toplevel)]"
         git worktree list
+        echo "--absolute-git-dir: [$(git rev-parse --absolute-git-dir)]"
         echo "Debugging *******************************"
     `)
 
