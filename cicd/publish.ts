@@ -25,8 +25,10 @@ handle(async () => {
     await bash.execute(`
         echo "Debugging *******************************"
         echo "pwd: [$(pwd)]"
+        ls -la
         echo "git rev-parse: [$(git rev-parse --show-toplevel)]"
         cd cicd
+        echo "pwd: [$(pwd)]"
         echo "git rev-parse: [$(git rev-parse --show-toplevel)]"
         echo "Debugging *******************************"
     `)
