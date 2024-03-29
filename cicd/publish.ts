@@ -30,6 +30,7 @@ handle(async () => {
         cd cicd
         echo "pwd: [$(pwd)]"
         echo "git rev-parse: [$(git rev-parse --show-toplevel)]"
+        git worktree list
         echo "Debugging *******************************"
     `)
 
