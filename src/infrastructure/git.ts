@@ -1,29 +1,34 @@
 import * as bash    from './bash'
 import * as logging from './logging'
+import * as fs      from 'node:fs'
+import * as path    from 'node:path'
 
 export class Git {
-    configured: Promise<string>
+    configured: Promise<void>
 
     constructor (ghToken: string) {
+        this.configured = this.configure(ghToken)
+    }
+
+    async configure(ghToken: string): Promise<void> {
+        const workingDir = await(bash.execute(`
+            pwd
+        `))
+
+        const gitDirectory = this.findGitDirectory(workingDir)
+
         console.log("Configuring git")
-        this.configured = bash.execute(`
-            git config --global --add safe.directory $(git rev-parse --show-toplevel)
+
+        await bash.execute(`
+            git config --global --add safe.directory ${gitDirectory}
             git config --global user.email "mirukenjs@gmail.com"
             git config --global user.name "buildpipeline"
             git config --global url."https://api:${ghToken}@github.com/".insteadOf "https://github.com/"
             git config --global url."https://ssh:${ghToken}@github.com/".insteadOf "ssh://git@github.com/"
             git config --global url."https://git:${ghToken}@github.com/".insteadOf "git@github.com:"
-        `).then((out:string) => {
-            console.log('Configured git')
-            return bash.execute(`
-                cat ~/.gitconfig
-            `)
-        }).catch((e) => {
-            const message = 'Unexpected error occurred configuring git'
-            console.log(message)
-            console.log(e)
-            return message
-        })
+        `)
+
+        console.log("Configured git")
     }
 
     async tagAndPush(tag: string) { 
@@ -81,5 +86,24 @@ export class Git {
         await bash.execute(`
             git push origin
         `)
+    }
+
+    findGitDirectory(dir: string): string {
+        if (!dir) {
+            throw new Error("No .github folder found")
+        }
+        if (!fs.existsSync(dir)) { 
+            throw new Error(`Directory ${dir} does not exist`)
+        }
+        if (fs.existsSync(path.join(dir, '.github'))) {
+            //Found it
+            return dir
+        } else {
+            //Look in the parent directory
+            const split = dir.split(path.sep)
+            split.pop()
+            const parent = split.join(path.sep)
+            return this.findGitDirectory(parent)
+        }
     }
 }
