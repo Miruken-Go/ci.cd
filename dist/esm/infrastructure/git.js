@@ -36,35 +36,55 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import * as bash from './bash';
 import * as logging from './logging';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 var Git = (function () {
     function Git(ghToken) {
-        if (!ghToken)
-            throw new Error('ghToken is required');
-        console.log("Configuring git");
-        bash.execute("\n            git config --global --add safe.directory $(pwd)\n            git config --global user.email \"mirukenjs@gmail.com\"\n            git config --global user.name \"buildpipeline\"\n            git config --global url.\"https://api:".concat(ghToken, "@github.com/\".insteadOf \"https://github.com/\"\n            git config --global url.\"https://ssh:").concat(ghToken, "@github.com/\".insteadOf \"ssh://git@github.com/\"\n            git config --global url.\"https://git:").concat(ghToken, "@github.com/\".insteadOf \"git@github.com:\"\n        "));
+        this.configured = this.configure(ghToken);
     }
+    Git.prototype.configure = function (ghToken) {
+        return __awaiter(this, void 0, void 0, function () {
+            var workingDir, gitDirectory;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, (bash.execute("\n            pwd\n        "))];
+                    case 1:
+                        workingDir = _a.sent();
+                        gitDirectory = this.findGitDirectory(workingDir);
+                        console.log("Configuring git");
+                        return [4, bash.execute("\n            git config --global --add safe.directory ".concat(gitDirectory, "\n            git config --global user.email \"mirukenjs@gmail.com\"\n            git config --global user.name \"buildpipeline\"\n            git config --global url.\"https://api:").concat(ghToken, "@github.com/\".insteadOf \"https://github.com/\"\n            git config --global url.\"https://ssh:").concat(ghToken, "@github.com/\".insteadOf \"ssh://git@github.com/\"\n            git config --global url.\"https://git:").concat(ghToken, "@github.com/\".insteadOf \"git@github.com:\"\n        "))];
+                    case 2:
+                        _a.sent();
+                        console.log("Configured git");
+                        return [2];
+                }
+            });
+        });
+    };
     Git.prototype.tagAndPush = function (tag) {
         return __awaiter(this, void 0, void 0, function () {
             var existingTag;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
+                    case 0: return [4, this.configured];
+                    case 1:
+                        _a.sent();
                         logging.header("Tagging the commit");
                         return [4, bash.execute("\n            git tag -l ".concat(tag, "\n        "))];
-                    case 1:
+                    case 2:
                         existingTag = _a.sent();
                         console.log("existingTag: [".concat(existingTag, "]"));
                         console.log("tag: [".concat(tag, "]"));
-                        if (!(existingTag === tag)) return [3, 2];
+                        if (!(existingTag === tag)) return [3, 3];
                         console.log("Tag already created");
-                        return [3, 4];
-                    case 2:
+                        return [3, 5];
+                    case 3:
                         console.log("Tagging the release");
                         return [4, bash.execute("\n                git tag -a ".concat(tag, " -m \"Tagged by build pipeline\"\n                git push origin ").concat(tag, "\n            "))];
-                    case 3:
+                    case 4:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [2];
+                        _a.label = 5;
+                    case 5: return [2];
                 }
             });
         });
@@ -74,8 +94,11 @@ var Git = (function () {
             var status, foundChanges;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, bash.execute("\n            git status\n        ")];
+                    case 0: return [4, this.configured];
                     case 1:
+                        _a.sent();
+                        return [4, bash.execute("\n            git status\n        ")];
+                    case 2:
                         status = _a.sent();
                         foundChanges = status.includes('Changes not staged for commit');
                         if (foundChanges) {
@@ -93,10 +116,12 @@ var Git = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
+                    case 0: return [4, this.configured];
+                    case 1:
+                        _a.sent();
                         logging.header("Commiting Changes");
                         return [4, bash.execute("\n            git commit -am \"".concat(message, "\"\n        "))];
-                    case 1:
+                    case 2:
                         _a.sent();
                         return [2];
                 }
@@ -107,15 +132,34 @@ var Git = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
+                    case 0: return [4, this.configured];
+                    case 1:
+                        _a.sent();
                         logging.header("Pushing branch");
                         return [4, bash.execute("\n            git push origin\n        ")];
-                    case 1:
+                    case 2:
                         _a.sent();
                         return [2];
                 }
             });
         });
+    };
+    Git.prototype.findGitDirectory = function (dir) {
+        if (!dir) {
+            throw new Error("No .github folder found");
+        }
+        if (!fs.existsSync(dir)) {
+            throw new Error("Directory ".concat(dir, " does not exist"));
+        }
+        if (fs.existsSync(path.join(dir, '.github'))) {
+            return dir;
+        }
+        else {
+            var split = dir.split(path.sep);
+            split.pop();
+            var parent_1 = split.join(path.sep);
+            return this.findGitDirectory(parent_1);
+        }
     };
     return Git;
 }());
