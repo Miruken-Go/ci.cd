@@ -1,4 +1,4 @@
-import { AZ }            from './infrastructure/az'
+import { AZ, AZConfig }  from './infrastructure/az'
 import { B2C }           from './infrastructure/b2c'
 import { EnvSecrets }    from './infrastructure/envSecrets'
 import { EnvVariables }  from './infrastructure/envVariables'
@@ -16,6 +16,7 @@ import * as logging      from './infrastructure/logging'
 
 export {
     AZ,
+    AZConfig,
     B2C,
     EnvSecrets,
     EnvVariables,
