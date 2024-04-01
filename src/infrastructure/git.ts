@@ -54,7 +54,7 @@ export class Git {
         }
     }
 
-    async anyChanges() { 
+    async anyChanges(): Promise<boolean> { 
         await this.configured
 
         const status = await bash.execute(`
@@ -86,8 +86,13 @@ export class Git {
 
         await bash.execute(`
             git add ${selector}
-            git commit -m "${message}"
         `)
+
+        if (await this.anyChanges) {
+            await bash.execute(`
+                git commit -m "${message}"
+            `)
+        }
     }
 
     async push() { 
