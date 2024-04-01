@@ -131,6 +131,22 @@ var Git = (function () {
             });
         });
     };
+    Git.prototype.addAndCommit = function (selector, message) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.configured];
+                    case 1:
+                        _a.sent();
+                        logging.header("Committing [".concat(selector, "] Changes"));
+                        return [4, bash.execute("\n            git add ".concat(selector, "\n            git commit -m \"").concat(message, "\"\n        "))];
+                    case 2:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     Git.prototype.push = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {

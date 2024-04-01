@@ -30,6 +30,7 @@ handle(async () => {
         gittools/gitversion:5.12.0-alpine.3.14-6.0 /repo /showvariable SemVer
     `)
 
-    await new Git(secrets.ghToken)
-        .tagAndPush(`v${rawVersion}`)
+    const git = await new Git(secrets.ghToken)
+    await git.addAndCommit('dist* -f', 'built dist module')
+    await git.tagAndPush(`v${rawVersion}`)
 })
