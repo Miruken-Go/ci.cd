@@ -128,7 +128,7 @@ var Git = (function () {
             });
         });
     };
-    Git.prototype.addAndCommit = function (selector, message) {
+    Git.prototype.commitAndPush = function (selector, message) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -138,6 +138,9 @@ var Git = (function () {
                         logging.header("Committing [".concat(selector, "] Changes"));
                         return [4, bash.execute("\n            git add ".concat(selector, "\n            git commit -m \"").concat(message, "\"\n        "))];
                     case 2:
+                        _a.sent();
+                        return [4, this.push()];
+                    case 3:
                         _a.sent();
                         return [2];
                 }
