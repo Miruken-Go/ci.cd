@@ -79,7 +79,7 @@ export class Git {
         `)
     }
 
-    async addAndCommit(selector:string, message: string) { 
+    async commitAndPush(selector:string, message: string) {
         await this.configured
 
         logging.header(`Committing [${selector}] Changes`)
@@ -88,10 +88,11 @@ export class Git {
             git add ${selector}
         `)
 
-        if (await this.anyChanges) {
+        if (await this.anyChanges()) {
             await bash.execute(`
                 git commit -m "${message}"
             `)
+            await  this.push()
         }
     }
 
