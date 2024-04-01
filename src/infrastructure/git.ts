@@ -86,14 +86,9 @@ export class Git {
 
         await bash.execute(`
             git add ${selector}
+            git commit -m "${message}"
         `)
-
-        if (await this.anyChanges()) {
-            await bash.execute(`
-                git commit -m "${message}"
-            `)
-            await  this.push()
-        }
+        await this.push()
     }
 
     async push() { 
