@@ -61,7 +61,7 @@ var B2C = (function () {
         this.domain = domain;
         this.b2cNames = b2cNames;
         this.graph = new graph_1.Graph(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
-        this.az = new az_1.AZ(tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret);
+        this.az = new az_1.AZ({ tenantId: tenantId, subscriptionId: subscriptionId, deploymentPipelineClientId: deploymentPipelineClientId, deploymentPipelineClientSecret: deploymentPipelineClientSecret });
     }
     B2C.prototype.getWellKnownOpenIdConfiguration = function () {
         return __awaiter(this, void 0, void 0, function () {

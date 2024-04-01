@@ -40,13 +40,10 @@ exports.AZ = void 0;
 var bash = require("./bash");
 var logging_1 = require("./logging");
 var AZ = (function () {
-    function AZ(tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret) {
+    function AZ(config) {
         this.loggedInToAZ = false;
         this.loggedInToACR = false;
-        this.tenantId = tenantId;
-        this.subscriptionId = subscriptionId;
-        this.deploymentPipelineClientId = deploymentPipelineClientId;
-        this.deploymentPipelineClientSecret = deploymentPipelineClientSecret;
+        this.config = config;
     }
     AZ.prototype.login = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -56,7 +53,7 @@ var AZ = (function () {
                         if (this.loggedInToAZ)
                             return [2];
                         (0, logging_1.header)('Logging into az');
-                        return [4, bash.execute("az login --service-principal --username ".concat(this.deploymentPipelineClientId, " --password ").concat(this.deploymentPipelineClientSecret, " --tenant ").concat(this.tenantId))];
+                        return [4, bash.execute("az login --service-principal --username ".concat(this.config.deploymentPipelineClientId, " --password ").concat(this.config.deploymentPipelineClientSecret, " --tenant ").concat(this.config.tenantId))];
                     case 1:
                         _a.sent();
                         this.loggedInToAZ = true;
@@ -92,7 +89,7 @@ var AZ = (function () {
                     case 0: return [4, this.login()];
                     case 1:
                         _a.sent();
-                        return [4, bash.execute("az group create --location ".concat(location, " --name ").concat(name, " --subscription ").concat(this.subscriptionId, " --tags ").concat(tags))];
+                        return [4, bash.execute("az group create --location ".concat(location, " --name ").concat(name, " --subscription ").concat(this.config.subscriptionId, " --tags ").concat(tags))];
                     case 2:
                         _a.sent();
                         return [2];
@@ -133,7 +130,7 @@ var AZ = (function () {
                     case 0: return [4, this.login()];
                     case 1:
                         _a.sent();
-                        return [4, bash.json("az acr credential show --name ".concat(name, " --subscription ").concat(this.subscriptionId), true)];
+                        return [4, bash.json("az acr credential show --name ".concat(name, " --subscription ").concat(this.config.subscriptionId), true)];
                     case 2:
                         result = _a.sent();
                         if (!result.passwords.length)

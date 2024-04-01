@@ -1,31 +1,27 @@
 import * as bash  from './bash'
 import { header } from './logging'
 
+export interface AZConfig {
+    tenantId:                       string,
+    subscriptionId:                 string,
+    deploymentPipelineClientId:     string,
+    deploymentPipelineClientSecret: string,
+}
+
 export class AZ {
-    tenantId:                       string
-    subscriptionId:                 string
-    deploymentPipelineClientId:     string
-    deploymentPipelineClientSecret: string
-    loggedInToAZ:                   boolean = false 
-    loggedInToACR:                  boolean = false 
+    config:        AZConfig
+    loggedInToAZ:  boolean = false 
+    loggedInToACR: boolean = false 
     
-    constructor (
-        tenantId:                       string,
-        subscriptionId:                 string,
-        deploymentPipelineClientId:     string,
-        deploymentPipelineClientSecret: string,
-    ) {
-        this.tenantId                       = tenantId
-        this.subscriptionId                 = subscriptionId
-        this.deploymentPipelineClientId     = deploymentPipelineClientId
-        this.deploymentPipelineClientSecret = deploymentPipelineClientSecret
+    constructor (config: AZConfig) {
+        this.config = config
     }
 
     async login() {
         if (this.loggedInToAZ) return 
 
         header('Logging into az')
-        await bash.execute(`az login --service-principal --username ${this.deploymentPipelineClientId} --password ${this.deploymentPipelineClientSecret} --tenant ${this.tenantId}`);
+        await bash.execute(`az login --service-principal --username ${this.config.deploymentPipelineClientId} --password ${this.config.deploymentPipelineClientSecret} --tenant ${this.config.tenantId}`);
         this.loggedInToAZ = true 
     }
 
@@ -42,7 +38,7 @@ export class AZ {
 
     async createResourceGroup(name: string, location: string, tags: Record<string, string>) {
         await this.login()
-        await bash.execute(`az group create --location ${location} --name ${name} --subscription ${this.subscriptionId} --tags ${tags}`)
+        await bash.execute(`az group create --location ${location} --name ${name} --subscription ${this.config.subscriptionId} --tags ${tags}`)
     }
 
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/troubleshooting/error-register-resource-provider?tabs=azure-cli
@@ -61,7 +57,7 @@ export class AZ {
 
     async getAzureContainerRepositoryPassword(name: string) {
         await this.login()
-        const result = await bash.json(`az acr credential show --name ${name} --subscription ${this.subscriptionId}`, true)
+        const result = await bash.json(`az acr credential show --name ${name} --subscription ${this.config.subscriptionId}`, true)
         if (!result.passwords.length)
             throw new Error(`Expected passwords from the Azure Container Registry: ${name}`)
 
