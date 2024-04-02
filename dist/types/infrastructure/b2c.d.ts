@@ -1,6 +1,6 @@
 import { AZ } from './az';
 import { Graph } from './graph';
-import { Domain, B2CNames } from './config';
+import { Domain, B2CResource } from './config';
 interface OAuthPermissionScope {
     id: string;
     adminConsentDescription: string;
@@ -41,9 +41,9 @@ interface B2cApplication {
 export declare class B2C {
     domain: Domain;
     graph: Graph;
-    b2cNames: B2CNames;
+    b2cResource: B2CResource;
     az: AZ;
-    constructor(domain: Domain, b2cNames: B2CNames, tenantId: string, subscriptionId: string, deploymentPipelineClientId: string, deploymentPipelineClientSecret: string, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string);
+    constructor(domain: Domain, b2cResource: B2CResource, tenantId: string, subscriptionId: string, deploymentPipelineClientId: string, deploymentPipelineClientSecret: string, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string);
     getWellKnownOpenIdConfiguration(): Promise<any>;
     getApplications(): Promise<B2cApplication[]>;
     getApplicationById(id: string): Promise<B2cApplication>;

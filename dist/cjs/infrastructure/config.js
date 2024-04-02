@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Domain = exports.Application = exports.KeyVault = exports.Storage = exports.ContainerRepository = exports.B2CNames = exports.ResourceGroups = void 0;
+exports.Domain = exports.Application = exports.KeyVaultResource = exports.StorageResource = exports.ContainerRepositoryResource = exports.B2CResource = exports.ResourceGroups = void 0;
 function stripCharacters(input) {
     return input.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
 }
@@ -69,57 +69,57 @@ var ResourceGroups = (function () {
     return ResourceGroups;
 }());
 exports.ResourceGroups = ResourceGroups;
-var B2CNames = (function () {
-    function B2CNames(opts) {
+var B2CResource = (function () {
+    function B2CResource(opts) {
         this.cleanedName = stripCharacters(opts.name);
         this.env = opts.env;
         this.profile = opts.profile || 'B2C_1A_SIGNUP_SIGNIN';
     }
-    Object.defineProperty(B2CNames.prototype, "name", {
+    Object.defineProperty(B2CResource.prototype, "name", {
         get: function () {
             return "".concat(this.cleanedName, "auth").concat(this.env).toLowerCase();
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(B2CNames.prototype, "displayName", {
+    Object.defineProperty(B2CResource.prototype, "displayName", {
         get: function () {
             return "".concat(this.cleanedName, " auth ").concat(this.env).toLowerCase();
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(B2CNames.prototype, "domainName", {
+    Object.defineProperty(B2CResource.prototype, "domainName", {
         get: function () {
             return "".concat(this.name, ".onmicrosoft.com");
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(B2CNames.prototype, "openIdConfigurationUrl", {
+    Object.defineProperty(B2CResource.prototype, "openIdConfigurationUrl", {
         get: function () {
             return "https://".concat(this.name, ".b2clogin.com/").concat(this.name, ".onmicrosoft.com/v2.0/.well-known/openid-configuration?p=").concat(this.profile);
         },
         enumerable: false,
         configurable: true
     });
-    return B2CNames;
+    return B2CResource;
 }());
-exports.B2CNames = B2CNames;
-var ContainerRepository = (function () {
-    function ContainerRepository(opts) {
+exports.B2CResource = B2CResource;
+var ContainerRepositoryResource = (function () {
+    function ContainerRepositoryResource(opts) {
         if (!opts.name)
             throw new Error("name required");
         var name = stripCharacters(opts.name);
         this.name = "".concat(name, "global");
         if (this.name.length > 32)
-            throw "Configuration Error - ContainerRepository.Name cannot be longer than 32 characters : ".concat(this.name, " [").concat(this.name.length, "]");
+            throw "Configuration Error - ContainerRepositoryResource.Name cannot be longer than 32 characters : ".concat(this.name, " [").concat(this.name.length, "]");
     }
-    return ContainerRepository;
+    return ContainerRepositoryResource;
 }());
-exports.ContainerRepository = ContainerRepository;
-var Storage = (function () {
-    function Storage(opts) {
+exports.ContainerRepositoryResource = ContainerRepositoryResource;
+var StorageResource = (function () {
+    function StorageResource(opts) {
         var _a;
         if (!opts.name)
             throw new Error("name required");
@@ -130,16 +130,16 @@ var Storage = (function () {
         if (this.name.length > 24)
             throw "Configuration Error - Storage.Name cannot be longer than 24 characters : ".concat(this.name, " [").concat(this.name.length, "]");
     }
-    return Storage;
+    return StorageResource;
 }());
-exports.Storage = Storage;
-var KeyVault = (function () {
-    function KeyVault(opts) {
+exports.StorageResource = StorageResource;
+var KeyVaultResource = (function () {
+    function KeyVaultResource(opts) {
         if (!opts.name)
             throw new Error("name required");
         this.opts = opts;
     }
-    Object.defineProperty(KeyVault.prototype, "name", {
+    Object.defineProperty(KeyVaultResource.prototype, "name", {
         get: function () {
             if (!this.opts.env)
                 throw new Error("env required");
@@ -153,9 +153,9 @@ var KeyVault = (function () {
         enumerable: false,
         configurable: true
     });
-    return KeyVault;
+    return KeyVaultResource;
 }());
-exports.KeyVault = KeyVault;
+exports.KeyVaultResource = KeyVaultResource;
 var Application = (function () {
     function Application(opts, parent) {
         this.scopes = [];
@@ -172,12 +172,12 @@ var Application = (function () {
         this.enrichApi = opts.enrichApi || false;
         this.scopes = opts.scopes || ['Group', 'Role', 'Entitlement'];
         this.secrets = opts.secrets || [];
-        var containerRepositories = this.resourcesByType(ContainerRepository);
+        var containerRepositories = this.resourcesByType(ContainerRepositoryResource);
         if (containerRepositories.length) {
             this.imageName = "".concat(containerRepositories[0].name, ".azurecr.io/").concat(name);
         }
         else {
-            throw new Error('Could not find a configured ContainerRepository');
+            throw new Error('Could not find a configured ContainerRepositoryResource');
         }
     }
     Application.prototype.resourcesByType = function (resourceType) {

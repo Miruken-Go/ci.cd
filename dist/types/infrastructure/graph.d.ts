@@ -1,12 +1,12 @@
-import { Domain, B2CNames } from './config';
+import { Domain, B2CResource } from './config';
 export declare class Graph {
     domain: Domain;
-    b2cNames: B2CNames;
+    b2cResource: B2CResource;
     b2cDeploymentPipelineClientId: string;
     b2cDeploymentPipelineClientSecret: string;
     _token: string | undefined;
     static APP_ID: string;
-    constructor(domain: Domain, b2cNames: B2CNames, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string);
+    constructor(domain: Domain, b2cResource: B2CResource, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string);
     getToken(): Promise<string>;
     get(endpoint: string, version?: string): Promise<import("axios").AxiosResponse<any, any>>;
     post(endpoint: string, json: any, version?: string): Promise<import("axios").AxiosResponse<any, any>>;

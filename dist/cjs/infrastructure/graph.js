@@ -40,7 +40,7 @@ exports.Graph = void 0;
 var querystring = require("node:querystring");
 var axios_1 = require("axios");
 var Graph = (function () {
-    function Graph(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
+    function Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
         this._token = undefined;
         if (!domain)
             throw new Error('domain is required');
@@ -49,7 +49,7 @@ var Graph = (function () {
         if (!b2cDeploymentPipelineClientSecret)
             throw new Error('b2cDeploymentPipelineClientSecret is required');
         this.domain = domain;
-        this.b2cNames = b2cNames;
+        this.b2cResource = b2cResource;
         this.b2cDeploymentPipelineClientId = b2cDeploymentPipelineClientId;
         this.b2cDeploymentPipelineClientSecret = b2cDeploymentPipelineClientSecret;
     }
@@ -61,7 +61,7 @@ var Graph = (function () {
                     case 0:
                         if (this._token)
                             return [2, this._token];
-                        uri = "https://login.microsoftonline.com/".concat(this.b2cNames.domainName, "/oauth2/v2.0/token");
+                        uri = "https://login.microsoftonline.com/".concat(this.b2cResource.domainName, "/oauth2/v2.0/token");
                         return [4, axios_1.default.post(uri, querystring.stringify({
                                 client_id: this.b2cDeploymentPipelineClientId,
                                 scope: 'https://graph.microsoft.com/.default',

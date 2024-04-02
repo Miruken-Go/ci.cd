@@ -9,7 +9,7 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import { Domain, Application, ResourceGroups, ContainerRepository, KeyVault, B2CNames } from './config';
+import { Domain, Application, ResourceGroups, ContainerRepositoryResource, KeyVaultResource, B2CResource } from './config';
 describe('Application', function () {
     it('exists', function () {
         expect(Application).toBeDefined();
@@ -22,7 +22,10 @@ describe('Application', function () {
         applications: [],
         domains: [],
         resources: {
-            containerRepository: ContainerRepository,
+            containerRepository: new ContainerRepositoryResource({
+                env: 'e',
+                name: 'n',
+            }),
         }
     });
     describe('validation', function () {
@@ -54,7 +57,7 @@ describe('Application', function () {
                 applications: [],
                 domains: [],
                 resources: {
-                    containerRepository: new ContainerRepository({ env: 'e', name: 'n' }),
+                    containerRepository: new ContainerRepositoryResource({ env: 'e', name: 'n' }),
                 }
             });
             var appWithEnv = new Application({
@@ -72,7 +75,7 @@ describe('Application', function () {
                 applications: [],
                 domains: [],
                 resources: {
-                    containerRepository: new ContainerRepository({ env: 'e', name: 'n' }),
+                    containerRepository: new ContainerRepositoryResource({ env: 'e', name: 'n' }),
                 }
             });
             var appWithEnvAndInst = new Application({
@@ -90,7 +93,7 @@ describe('Application', function () {
                 applications: [],
                 domains: [],
                 resources: {
-                    containerRepository: new ContainerRepository({ env: 'e', name: 'n' }),
+                    containerRepository: new ContainerRepositoryResource({ env: 'e', name: 'n' }),
                 }
             });
             var appWithLongName = new Application({
@@ -144,9 +147,9 @@ describe('Domain', function () {
                 'foo@bar.com',
                 'bizz@buzz.com',
             ], resources: {
-                b2c: new B2CNames(orgOpts),
-                containerRepository: new ContainerRepository(orgOpts),
-                keyVault: new KeyVault(orgOpts),
+                b2c: new B2CResource(orgOpts),
+                containerRepository: new ContainerRepositoryResource(orgOpts),
+                keyVault: new KeyVaultResource(orgOpts),
             }, applications: [] }));
         var domain = new Domain({
             env: env,
@@ -219,9 +222,9 @@ describe('Domain', function () {
         };
         var domainOpts = __assign(__assign({}, envOpts), { name: 'MajorLeagueMiruken' });
         var org = new Domain(__assign(__assign({}, domainOpts), { location: 'CentralUs', env: 'dev', instance: 'ci', gitRepositoryUrl: 'http://', resources: {
-                b2c: new B2CNames(domainOpts),
-                containerRepository: new ContainerRepository(domainOpts),
-                keyVault: new KeyVault(domainOpts),
+                b2c: new B2CResource(domainOpts),
+                containerRepository: new ContainerRepositoryResource(domainOpts),
+                keyVault: new KeyVaultResource(domainOpts),
             }, applications: [
                 {
                     name: 'enrich-srv',
@@ -291,28 +294,28 @@ describe('Domain', function () {
         });
     });
 });
-describe('ContainerRepository', function () {
+describe('ContainerRepositoryResource', function () {
     it('exitsts', function () {
-        expect(ContainerRepository).toBeDefined();
+        expect(ContainerRepositoryResource).toBeDefined();
     });
     describe('validation', function () {
-        it('valid ContainerRepository throws no exceptions', function () {
-            new ContainerRepository({
+        it('valid ContainerRepositoryResource throws no exceptions', function () {
+            new ContainerRepositoryResource({
                 env: 'e',
                 name: 'n',
             });
         });
         it('name cannot be more than 32 characters', function () {
             expect(function () {
-                new ContainerRepository({
+                new ContainerRepositoryResource({
                     env: 'e',
                     name: '123456789012345678901234567890'
                 });
-            }).toThrow('Configuration Error - ContainerRepository.Name cannot be longer than 32 characters');
+            }).toThrow('Configuration Error - ContainerRepositoryResource.Name cannot be longer than 32 characters');
         });
     });
-    describe('valid ContainerRepository instance', function () {
-        var cr = new ContainerRepository({
+    describe('valid ContainerRepositoryResource instance', function () {
+        var cr = new ContainerRepositoryResource({
             env: 'e',
             name: 'My-Name'
         });
@@ -323,12 +326,12 @@ describe('ContainerRepository', function () {
 });
 describe('KeyVault', function () {
     it('exists', function () {
-        expect(KeyVault).toBeDefined();
+        expect(KeyVaultResource).toBeDefined();
     });
     describe('validation', function () {
         it('name cannot be more than 24 characters', function () {
             expect(function () {
-                var keyVault = new KeyVault({
+                var keyVault = new KeyVaultResource({
                     name: '123456789012345678901234',
                     env: 'e'
                 });
@@ -338,7 +341,7 @@ describe('KeyVault', function () {
     });
     describe('valid KeyVault instance', function () {
         it('strips characters for the name', function () {
-            var keyVault = new KeyVault({
+            var keyVault = new KeyVaultResource({
                 name: 'My-Name',
                 env: 'ENV'
             });
@@ -394,12 +397,12 @@ describe('ResourceGroups', function () {
         });
     });
 });
-describe('B2CNames', function () {
+describe('B2CResource', function () {
     it('exitsts', function () {
-        expect(B2CNames).toBeDefined();
+        expect(B2CResource).toBeDefined();
     });
     describe('valid b2c instance', function () {
-        var b2c = new B2CNames({
+        var b2c = new B2CResource({
             name: 'Major-League-Miruken',
             env: 'dev'
         });
@@ -420,7 +423,7 @@ describe('B2CNames', function () {
         });
     });
     describe('valid b2c instance', function () {
-        var b2c = new B2CNames({
+        var b2c = new B2CResource({
             name: 'Major-League-Miruken',
             env: 'dev',
             profile: 'p'

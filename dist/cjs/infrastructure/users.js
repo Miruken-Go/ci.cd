@@ -40,14 +40,14 @@ exports.Users = void 0;
 var logging_1 = require("./logging");
 var graph_1 = require("./graph");
 var Users = (function () {
-    function Users(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
+    function Users(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
         if (!domain)
             throw new Error('domain is required');
         if (!b2cDeploymentPipelineClientId)
             throw new Error('b2cDeploymentPipelineClientId is required');
         this.domain = domain;
-        this.b2cNames = b2cNames;
-        this.graph = new graph_1.Graph(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
+        this.b2cResource = b2cResource;
+        this.graph = new graph_1.Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
     }
     Users.prototype.configureBootstrapUsers = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -76,7 +76,7 @@ var Users = (function () {
                         return [4, this.graph.post('/users', {
                                 identities: [{
                                         signInType: "emailAddress",
-                                        issuer: this.b2cNames.domainName,
+                                        issuer: this.b2cResource.domainName,
                                         issuerAssignedId: email
                                     }],
                                 userType: "Member",

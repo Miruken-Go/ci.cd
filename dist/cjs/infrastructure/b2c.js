@@ -53,14 +53,14 @@ var fs = require("node:fs");
 var path = require("node:path");
 var axios_1 = require("axios");
 var B2C = (function () {
-    function B2C(domain, b2cNames, tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
+    function B2C(domain, b2cResource, tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
         if (!domain)
             throw new Error('domain is required');
         if (!b2cDeploymentPipelineClientId)
             throw new Error('b2cDeploymentPipelineClientId is required');
         this.domain = domain;
-        this.b2cNames = b2cNames;
-        this.graph = new graph_1.Graph(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
+        this.b2cResource = b2cResource;
+        this.graph = new graph_1.Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
         this.az = new az_1.AZ({ tenantId: tenantId, subscriptionId: subscriptionId, deploymentPipelineClientId: deploymentPipelineClientId, deploymentPipelineClientSecret: deploymentPipelineClientSecret });
     }
     B2C.prototype.getWellKnownOpenIdConfiguration = function () {
@@ -70,7 +70,7 @@ var B2C = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        uri = this.b2cNames.openIdConfigurationUrl;
+                        uri = this.b2cResource.openIdConfigurationUrl;
                         console.log("Getting: ".concat(uri));
                         return [4, axios_1.default.get(uri)
                                 .catch(function (error) {
@@ -241,7 +241,7 @@ var B2C = (function () {
                         return [4, this.createOrUpdateApplication({
                                 displayName: domain.name,
                                 signInAudience: 'AzureADandPersonalMicrosoftAccount',
-                                identifierUris: ["https://".concat(this.b2cNames.name, ".onmicrosoft.com/").concat(domain.name)],
+                                identifierUris: ["https://".concat(this.b2cResource.name, ".onmicrosoft.com/").concat(domain.name)],
                                 api: {
                                     requestedAccessTokenVersion: 2,
                                     oauth2PermissionScopes: [
@@ -394,7 +394,7 @@ var B2C = (function () {
                         policyId = "B2C_1A_".concat(path.basename(file, '.xml'));
                         filePath = path.join(customPoliciesDirectory, file);
                         xml = fs.readFileSync(filePath, { encoding: 'utf-8' });
-                        xml = xml.replace(/{B2C_DOMAIN_NAME}/g, this.b2cNames.domainName);
+                        xml = xml.replace(/{B2C_DOMAIN_NAME}/g, this.b2cResource.domainName);
                         xml = xml.replace(/{IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g, identityExperienceFrameworkClient.appId);
                         xml = xml.replace(/{PROXY_IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g, proxyIdentityExperienceFrameworkClient.appId);
                         xml = xml.replace(/{AUTHORIZATION_SERVICE_URL}/g, authorizationServiceUrl);

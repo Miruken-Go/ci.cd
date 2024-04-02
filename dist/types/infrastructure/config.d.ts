@@ -15,28 +15,28 @@ export declare class ResourceGroups {
     get stable(): string;
     get instance(): string;
 }
-interface B2CNamesOpts extends Opts {
+interface B2CResourceOpts extends Opts {
     profile?: string;
 }
-export declare class B2CNames {
+export declare class B2CResource {
     cleanedName: string;
     env: string;
     profile: string;
-    constructor(opts: B2CNamesOpts);
+    constructor(opts: B2CResourceOpts);
     get name(): string;
     get displayName(): string;
     get domainName(): string;
     get openIdConfigurationUrl(): string;
 }
-export declare class ContainerRepository {
+export declare class ContainerRepositoryResource {
     name: string;
     constructor(opts: Opts);
 }
-export declare class Storage {
+export declare class StorageResource {
     name: string;
     constructor(opts: Opts);
 }
-export declare class KeyVault {
+export declare class KeyVaultResource {
     opts: Opts;
     constructor(opts: Opts);
     get name(): string;
@@ -87,7 +87,7 @@ export declare class Domain {
     parent?: Domain;
     gitRepositoryUrl: string;
     resourceGroups: ResourceGroups;
-    containerRepository?: ContainerRepository;
+    containerRepository?: ContainerRepositoryResource;
     domains: Domain[];
     applications: Application[];
     bootstrapUsers: string[];
