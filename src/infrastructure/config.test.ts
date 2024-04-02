@@ -3,9 +3,9 @@ import {
     Domain,
     Application,
     ResourceGroups,
-    ContainerRepository,                
-    KeyVault,
-    B2CNames
+    ContainerRepositoryResource, 
+    KeyVaultResource,
+    B2CResource
 } from './config'
 
 describe('Application', function () {
@@ -21,7 +21,10 @@ describe('Application', function () {
         applications:     [],
         domains:          [],
         resources: {
-            containerRepository: ContainerRepository,
+            containerRepository: new ContainerRepositoryResource({
+                env: 'e',
+                name: 'n',
+            }),
         }
     })
 
@@ -56,7 +59,7 @@ describe('Application', function () {
                 applications:     [],
                 domains:          [],
                 resources: {
-                    containerRepository: new ContainerRepository({env: 'e', name: 'n'}),
+                    containerRepository: new ContainerRepositoryResource({env: 'e', name: 'n'}),
                 }
             })
             const appWithEnv = new Application({
@@ -75,7 +78,7 @@ describe('Application', function () {
                 applications:     [],
                 domains:          [],
                 resources: {
-                    containerRepository: new ContainerRepository({env: 'e', name: 'n'}),
+                    containerRepository: new ContainerRepositoryResource({env: 'e', name: 'n'}),
                 }
             })
             const appWithEnvAndInst = new Application({
@@ -94,7 +97,7 @@ describe('Application', function () {
                 applications:     [],
                 domains:          [],
                 resources: {
-                    containerRepository: new ContainerRepository({env: 'e', name: 'n'}),
+                    containerRepository: new ContainerRepositoryResource({env: 'e', name: 'n'}),
                 }
             })
             const appWithLongName = new Application({
@@ -177,9 +180,9 @@ describe('Domain', function () {
                 'bizz@buzz.com',
             ],
             resources: {
-                b2c:                 new B2CNames(orgOpts),
-                containerRepository: new ContainerRepository(orgOpts),
-                keyVault:            new KeyVault(orgOpts),
+                b2c:                 new B2CResource(orgOpts),
+                containerRepository: new ContainerRepositoryResource(orgOpts),
+                keyVault:            new KeyVaultResource(orgOpts),
             },
             applications: [],
         })
@@ -275,9 +278,9 @@ describe('Domain', function () {
             instance: 'ci',
             gitRepositoryUrl: 'http://',
             resources: {
-                b2c:                 new B2CNames(domainOpts),
-                containerRepository: new ContainerRepository(domainOpts),
-                keyVault:            new KeyVault(domainOpts),
+                b2c:                 new B2CResource(domainOpts),
+                containerRepository: new ContainerRepositoryResource(domainOpts),
+                keyVault:            new KeyVaultResource(domainOpts),
             },
             applications: [
                 {
@@ -363,27 +366,27 @@ describe('Domain', function () {
 
 })
 
-describe('ContainerRepository', () => { 
+describe('ContainerRepositoryResource', () => { 
     it('exitsts', function () { 
-        expect(ContainerRepository).toBeDefined()
+        expect(ContainerRepositoryResource).toBeDefined()
     })
     describe('validation', function () {
-        it('valid ContainerRepository throws no exceptions', function () {
-            new ContainerRepository({
+        it('valid ContainerRepositoryResource throws no exceptions', function () {
+            new ContainerRepositoryResource({
                 env: 'e',
                 name: 'n',
             })
         })
         it('name cannot be more than 32 characters', function () {
-            expect(()=>{new ContainerRepository({
+            expect(()=>{new ContainerRepositoryResource({
                 env: 'e',
                 name: '123456789012345678901234567890'
-            })}).toThrow('Configuration Error - ContainerRepository.Name cannot be longer than 32 characters')
+            })}).toThrow('Configuration Error - ContainerRepositoryResource.Name cannot be longer than 32 characters')
         })
     })
 
-    describe('valid ContainerRepository instance', () => {
-        const cr = new ContainerRepository({
+    describe('valid ContainerRepositoryResource instance', () => {
+        const cr = new ContainerRepositoryResource({
             env:  'e',
             name: 'My-Name'
         })
@@ -395,13 +398,13 @@ describe('ContainerRepository', () => {
 
 describe('KeyVault', () => { 
     it('exists', function () { 
-        expect(KeyVault).toBeDefined()
+        expect(KeyVaultResource).toBeDefined()
     })
 
     describe('validation', function () {
         it('name cannot be more than 24 characters', function () {
             expect(()=>{
-                const keyVault = new KeyVault({
+                const keyVault = new KeyVaultResource({
                     name: '123456789012345678901234',
                     env:  'e'
                 })
@@ -412,7 +415,7 @@ describe('KeyVault', () => {
 
     describe('valid KeyVault instance', () => {
         it('strips characters for the name', function () {
-            const keyVault = new KeyVault({
+            const keyVault = new KeyVaultResource({
                 name: 'My-Name',
                 env:  'ENV'
             })
@@ -481,14 +484,14 @@ describe('ResourceGroups', function () {
     })
 })
 
-describe('B2CNames', function () { 
+describe('B2CResource', function () { 
     it('exitsts', function () { 
-        expect(B2CNames).toBeDefined()
+        expect(B2CResource).toBeDefined()
     })
 
     describe('valid b2c instance', function(){
 
-        const b2c = new B2CNames({
+        const b2c = new B2CResource({
             name:    'Major-League-Miruken',
             env:     'dev'
         })
@@ -512,7 +515,7 @@ describe('B2CNames', function () {
 
     describe('valid b2c instance', function(){
 
-        const b2c = new B2CNames({
+        const b2c = new B2CResource({
             name:    'Major-League-Miruken',
             env:     'dev',
             profile: 'p'

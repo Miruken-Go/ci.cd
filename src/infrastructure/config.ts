@@ -1,5 +1,5 @@
 export interface Opts {
-    name:     string
+    name:      string
     env:       string
     instance?: string
 }
@@ -50,16 +50,16 @@ export class ResourceGroups {
     }
 }
 
-interface B2CNamesOpts extends Opts {
+interface B2CResourceOpts extends Opts {
     profile?: string
 }
 
-export class B2CNames {
+export class B2CResource {
     cleanedName: string
     env:         string
     profile:     string
 
-    constructor (opts: B2CNamesOpts) {
+    constructor (opts: B2CResourceOpts) {
         this.cleanedName = stripCharacters(opts.name)
         this.env         = opts.env
         this.profile     = opts.profile || 'B2C_1A_SIGNUP_SIGNIN'
@@ -82,7 +82,7 @@ export class B2CNames {
     }
 }
 
-export class ContainerRepository {
+export class ContainerRepositoryResource {
     name: string
 
     constructor (opts: Opts) {
@@ -93,11 +93,11 @@ export class ContainerRepository {
         this.name = `${name}global`
 
         if (this.name.length > 32)
-             throw `Configuration Error - ContainerRepository.Name cannot be longer than 32 characters : ${this.name} [${this.name.length}]`
+             throw `Configuration Error - ContainerRepositoryResource.Name cannot be longer than 32 characters : ${this.name} [${this.name.length}]`
     }
 }
 
-export class Storage {
+export class StorageResource {
     name: string
 
     constructor (opts: Opts) {
@@ -112,7 +112,7 @@ export class Storage {
     }
 }
 
-export class KeyVault {
+export class KeyVaultResource {
     opts: Opts
 
     constructor (opts: Opts) {
@@ -171,11 +171,11 @@ export class Application {
         this.scopes         = opts.scopes       || ['Group', 'Role', 'Entitlement']
         this.secrets        = opts.secrets      || []
 
-        const containerRepositories = this.resourcesByType(ContainerRepository)
+        const containerRepositories = this.resourcesByType(ContainerRepositoryResource)
         if (containerRepositories.length) {
             this.imageName = `${containerRepositories[0].name}.azurecr.io/${name}`
         } else {
-            throw new Error('Could not find a configured ContainerRepository')
+            throw new Error('Could not find a configured ContainerRepositoryResource')
         }
     }
 
@@ -229,7 +229,7 @@ export class Domain {
     parent?:              Domain
     gitRepositoryUrl:     string
     resourceGroups:       ResourceGroups
-    containerRepository?: ContainerRepository
+    containerRepository?: ContainerRepositoryResource
     domains:              Domain[]                 = []
     applications:         Application[]            = []
     bootstrapUsers:       string[]                 = []

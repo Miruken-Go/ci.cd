@@ -1,23 +1,23 @@
-import * as querystring     from 'node:querystring'
-import axios                from 'axios'
-import { Domain, B2CNames } from './config'
+import * as querystring        from 'node:querystring'
+import axios                   from 'axios'
+import { Domain, B2CResource } from './config'
 
 export class Graph {
     domain:                            Domain
-    b2cNames:                          B2CNames
+    b2cResource:                       B2CResource
     b2cDeploymentPipelineClientId:     string
     b2cDeploymentPipelineClientSecret: string
     _token:                            string | undefined  = undefined
 
     static APP_ID = "00000003-0000-0000-c000-000000000000"
 
-    constructor (domain: Domain, b2cNames: B2CNames, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string) {
+    constructor (domain: Domain, b2cResource: B2CResource, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string) {
         if (!domain)                            throw new Error('domain is required')
         if (!b2cDeploymentPipelineClientId)     throw new Error('b2cDeploymentPipelineClientId is required')
         if (!b2cDeploymentPipelineClientSecret) throw new Error('b2cDeploymentPipelineClientSecret is required')
 
         this.domain                            = domain
-        this.b2cNames                          = b2cNames
+        this.b2cResource                          = b2cResource
         this.b2cDeploymentPipelineClientId     = b2cDeploymentPipelineClientId
         this.b2cDeploymentPipelineClientSecret = b2cDeploymentPipelineClientSecret
     }
@@ -25,7 +25,7 @@ export class Graph {
     async getToken() {
         if (this._token) return this._token;
 
-        const uri=`https://login.microsoftonline.com/${this.b2cNames.domainName}/oauth2/v2.0/token`
+        const uri=`https://login.microsoftonline.com/${this.b2cResource.domainName}/oauth2/v2.0/token`
         const result = await axios.post(uri, querystring.stringify({
             client_id:     this.b2cDeploymentPipelineClientId,
             scope:         'https://graph.microsoft.com/.default',

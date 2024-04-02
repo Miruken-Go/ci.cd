@@ -1,10 +1,10 @@
-import * as logging         from './logging'
-import { AZ }               from './az'
-import { Graph }            from './graph'
-import { Domain, B2CNames } from './config'
-import * as fs              from 'node:fs'
-import * as path            from 'node:path'
-import axios                from 'axios'
+import * as logging            from './logging'
+import { AZ }                  from './az'
+import { Graph }               from './graph'
+import { Domain, B2CResource } from './config'
+import * as fs                 from 'node:fs'
+import * as path               from 'node:path'
+import axios                   from 'axios'
 
 interface OAuthPermissionScope {
     id:                      string
@@ -51,12 +51,12 @@ interface B2cApplication {
 export class B2C {
     domain
     graph
-    b2cNames: B2CNames
+    b2cResource: B2CResource
     az:       AZ
 
     constructor (
         domain:                            Domain, 
-        b2cNames:                          B2CNames, 
+        b2cResource:                       B2CResource, 
         tenantId:                          string, 
         subscriptionId:                    string, 
         deploymentPipelineClientId:        string, 
@@ -68,13 +68,13 @@ export class B2C {
         if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
 
         this.domain   = domain
-        this.b2cNames = b2cNames
-        this.graph    = new Graph(domain, b2cNames, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret)
+        this.b2cResource = b2cResource
+        this.graph    = new Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret)
         this.az       = new AZ({tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret})
     }
 
     async getWellKnownOpenIdConfiguration() {
-        const uri = this.b2cNames.openIdConfigurationUrl
+        const uri = this.b2cResource.openIdConfigurationUrl
         console.log(`Getting: ${uri}`)
         const result = await axios.get(uri)
             .catch((error) => {
@@ -160,7 +160,7 @@ export class B2C {
         const appRegistration = await this.createOrUpdateApplication({
             displayName:    domain.name,
             signInAudience: 'AzureADandPersonalMicrosoftAccount',
-            identifierUris: [ `https://${this.b2cNames.name}.onmicrosoft.com/${domain.name}` ],
+            identifierUris: [ `https://${this.b2cResource.name}.onmicrosoft.com/${domain.name}` ],
             api: {
                 requestedAccessTokenVersion: 2,
                 oauth2PermissionScopes: [
@@ -293,7 +293,7 @@ export class B2C {
                 const filePath = path.join(customPoliciesDirectory, file)
                 let xml        = fs.readFileSync(filePath,{encoding: 'utf-8'}) 
 
-                xml = xml.replace(/{B2C_DOMAIN_NAME}/g,                              this.b2cNames.domainName)
+                xml = xml.replace(/{B2C_DOMAIN_NAME}/g,                              this.b2cResource.domainName)
                 xml = xml.replace(/{IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g,       identityExperienceFrameworkClient.appId)
                 xml = xml.replace(/{PROXY_IDENTITY_EXPERIENCE_FRAMEWORK_CLIENTID}/g, proxyIdentityExperienceFrameworkClient.appId)
                 xml = xml.replace(/{AUTHORIZATION_SERVICE_URL}/g,                    authorizationServiceUrl)
