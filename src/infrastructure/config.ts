@@ -291,14 +291,14 @@ export class Domain {
         }
     }
 
-    get enrichApiApplication () {
+    get enrichApiApplication (): Application {
         let application  = this.applications.find(a => a.enrichApi)
         if (application) return application
 
         throw new Error(`No application defined in domain where enrichApi = true`)
     }
 
-    getApplicationByName(name: string) {
+    getApplicationByName(name: string): Application {
         let application = this.applications.find(a => a.name === name)
         if (application) return application
 
@@ -310,7 +310,7 @@ export class Domain {
         throw new Error(`Application with name ${name} not found`)
     }
 
-    getDomainByName(name: string) {
+    getDomainByName(name: string): Domain {
         if (this.name === name.toLowerCase()) return this
 
         for (const domain of this.domains) {
