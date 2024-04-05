@@ -281,6 +281,16 @@ describe('Domain', function () {
             org.applications[0].enrichApi = false;
             expect(function () { org.getApplicationByName('I dont exist'); }).toThrow('Application with name I dont exist not found');
         });
+        it('gets domain by name from domain', function () {
+            expect(org.getDomainByName('MajorLeagueMiruken').name).toEqual('majorleaguemiruken');
+        });
+        it('gets domain by name from child domains', function () {
+            expect(org.getDomainByName('billing').name).toEqual('billing');
+        });
+        it('throw exception when domain is not found', function () {
+            org.applications[0].enrichApi = false;
+            expect(function () { org.getDomainByName('I dont exist'); }).toThrow('Domain with name I dont exist not found');
+        });
         describe('application imageName', function () {
             it('domain has image name', function () {
                 var app = org.applications[0];

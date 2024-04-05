@@ -95,5 +95,6 @@ export declare class Domain {
     constructor(opts: DomainOpts);
     get enrichApiApplication(): Application;
     getApplicationByName(name: string): Application;
+    getDomainByName(name: string): Domain;
 }
 export {};

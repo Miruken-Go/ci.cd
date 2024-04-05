@@ -287,6 +287,16 @@ var Domain = (function () {
         }
         throw new Error("Application with name ".concat(name, " not found"));
     };
+    Domain.prototype.getDomainByName = function (name) {
+        if (this.name === name.toLowerCase())
+            return this;
+        for (var _i = 0, _a = this.domains; _i < _a.length; _i++) {
+            var domain = _a[_i];
+            if (domain.name === name.toLowerCase())
+                return domain;
+        }
+        throw new Error("Domain with name ".concat(name, " not found"));
+    };
     return Domain;
 }());
 exports.Domain = Domain;
