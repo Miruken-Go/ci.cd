@@ -309,4 +309,14 @@ export class Domain {
 
         throw new Error(`Application with name ${name} not found`)
     }
+
+    getDomainByName(name) {
+        if (this.name === name.toLowerCase()) return this
+
+        for (const domain of this.domains) {
+            if (domain.name === name.toLowerCase()) return domain
+        }
+
+        throw new Error(`Domain with name ${name} not found`)
+    }
 }
