@@ -81,14 +81,20 @@ var AZ = (function () {
     };
     AZ.prototype.createResourceGroup = function (name, location, tags) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var tagsAsString, _i, _a, _b, key, value;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0: return [4, this.login()];
                     case 1:
-                        _a.sent();
-                        return [4, bash.execute("az group create --location ".concat(location, " --name ").concat(name, " --subscription ").concat(this.config.subscriptionId, " --tags ").concat(tags))];
+                        _c.sent();
+                        tagsAsString = '';
+                        for (_i = 0, _a = Object.entries(tags); _i < _a.length; _i++) {
+                            _b = _a[_i], key = _b[0], value = _b[1];
+                            tagsAsString += "".concat(key, "=").concat(value, " ");
+                        }
+                        return [4, bash.execute("az group create --location ".concat(location, " --name ").concat(name, " --subscription ").concat(this.config.subscriptionId, " --tags ").concat(tagsAsString))];
                     case 2:
-                        _a.sent();
+                        _c.sent();
                         return [2];
                 }
             });
