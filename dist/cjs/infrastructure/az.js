@@ -183,7 +183,7 @@ var AZ = (function () {
             });
         });
     };
-    AZ.prototype.deleteOrphanedApplicationSecurityPrincipals = function (name) {
+    AZ.prototype.deleteOrphanedApplicationSecurityPrincipals = function () {
         return __awaiter(this, void 0, void 0, function () {
             var ids;
             return __generator(this, function (_a) {

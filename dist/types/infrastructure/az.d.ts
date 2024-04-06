@@ -16,5 +16,5 @@ export declare class AZ {
     getAzureContainerRepositoryPassword(name: string): Promise<any>;
     getKeyVaultSecret(secretName: string, keyVaultName: string): Promise<any>;
     getContainerAppUrl(name: string, resourceGroup: string): Promise<any>;
-    deleteOrphanedApplicationSecurityPrincipals(name: string): Promise<void>;
+    deleteOrphanedApplicationSecurityPrincipals(): Promise<void>;
 }
