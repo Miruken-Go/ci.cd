@@ -87,7 +87,7 @@ export class AZ {
         return result.properties.configuration.ingress.fqdn
     }
 
-    async deleteOrphanedApplicationSecurityPrincipals(name: string) {
+    async deleteOrphanedApplicationSecurityPrincipals() {
         await this.login()
         const ids = await bash.json(`
             az role assignment list --all --query "[?principalName==''].id"    
