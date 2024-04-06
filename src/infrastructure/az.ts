@@ -38,7 +38,12 @@ export class AZ {
 
     async createResourceGroup(name: string, location: string, tags: Record<string, string>) {
         await this.login()
-        await bash.execute(`az group create --location ${location} --name ${name} --subscription ${this.config.subscriptionId} --tags ${tags}`)
+
+        let tagsAsString = ''
+        for ( const [key, value] of Object.entries(tags)) {
+            tagsAsString += `${key}=${value} `
+        }
+        await bash.execute(`az group create --location ${location} --name ${name} --subscription ${this.config.subscriptionId} --tags ${tagsAsString}`)
     }
 
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/troubleshooting/error-register-resource-provider?tabs=azure-cli
