@@ -12,7 +12,7 @@ jobs:
       packages: read
       contents: write
     container:
-      image: ghcr.io/miruken-go/demo.microservice.build:1712157679
+      image: ghcr.io/miruken-go/demo.microservice.build:1713989236
       env:
         ghToken:         ${{ secrets.CI_CD_TOKEN }}
         repositoryPath:  ${{ github.workspace }}

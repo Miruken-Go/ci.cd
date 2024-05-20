@@ -10,18 +10,19 @@ import {
     ResourceGroups,
     StorageResource
 } from './infrastructure/config'
-import { EnvSecrets }    from './infrastructure/envSecrets'
-import { EnvVariables }  from './infrastructure/envVariables'
-import { GH }            from './infrastructure/gh'
-import { Git }           from './infrastructure/git'
-import { Graph }         from './infrastructure/graph'
-import { handle }        from './infrastructure/handler'
-import { KeyVault }      from './infrastructure/keyVault'
-import { Users }         from './infrastructure/users'
-import * as bash         from './infrastructure/bash'
-import * as containerApp from './infrastructure/containerApp'
-import * as go           from './infrastructure/go'
-import * as logging      from './infrastructure/logging'
+import { EnvSecrets }      from './infrastructure/envSecrets'
+import { EnvVariables }    from './infrastructure/envVariables'
+import { GH }              from './infrastructure/gh'
+import { Git }             from './infrastructure/git'
+import { Graph }           from './infrastructure/graph'
+import { handle }          from './infrastructure/handler'
+import { KeyVault }        from './infrastructure/keyVault'
+import { Users }           from './infrastructure/users'
+import * as bash           from './infrastructure/bash'
+import * as containerApp   from './infrastructure/containerApp'
+import * as go             from './infrastructure/go'
+import * as logging        from './infrastructure/logging'
+import * as versionNumbers from './infrastructure/versionNumbers'
 
 export {
     Application,
@@ -48,4 +49,5 @@ export {
     containerApp,
     go,
     logging,
+    versionNumbers
 }

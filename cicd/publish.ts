@@ -4,12 +4,15 @@ import {
     EnvVariables,
     Git,
     logging,
-    bash
+    versionNumbers
 } from '../src/index'
 
 handle(async () => {
     const variables = new EnvVariables()
-        .required(['repositoryPath'])
+        .required([
+            'repositoryPath',
+            'ref'
+        ])
         .variables
 
     logging.printVariables(variables)
@@ -22,15 +25,9 @@ handle(async () => {
 
     logging.header("Publishing ci.cd")
 
-    //This docker container is running docker in docker from github actions
-    //Therefore using $(pwd) to get the working directory would be the working directory of the running container 
-    //Not the working directory from the host system. So we need to pass in the repository path.
-    const rawVersion = await bash.execute(`
-        docker run --rm -v '${variables.repositoryPath}:/repo' \
-        gittools/gitversion:5.12.0-alpine.3.14-6.0 /repo /showvariable SemVer
-    `)
+    const version = await versionNumbers.repoVersion(variables.repositoryPath, variables.ref)
 
     const git = await new Git(secrets.ghToken)
     await git.commitAndPush('dist* -f', 'built javascript dist modules')
-    await git.tagAndPush(`v${rawVersion}`)
+    await git.tagAndPush(`v${version}`)
 })
