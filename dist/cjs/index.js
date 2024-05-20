@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logging = exports.go = exports.containerApp = exports.bash = exports.Users = exports.StorageResource = exports.ResourceGroups = exports.KeyVaultResource = exports.KeyVault = exports.handle = exports.Graph = exports.Git = exports.GH = exports.EnvVariables = exports.EnvSecrets = exports.Domain = exports.ContainerRepositoryResource = exports.B2CResource = exports.B2C = exports.AZ = exports.Application = void 0;
+exports.versionNumbers = exports.logging = exports.go = exports.containerApp = exports.bash = exports.Users = exports.StorageResource = exports.ResourceGroups = exports.KeyVaultResource = exports.KeyVault = exports.handle = exports.Graph = exports.Git = exports.GH = exports.EnvVariables = exports.EnvSecrets = exports.Domain = exports.ContainerRepositoryResource = exports.B2CResource = exports.B2C = exports.AZ = exports.Application = void 0;
 var az_1 = require("./infrastructure/az");
 Object.defineProperty(exports, "AZ", { enumerable: true, get: function () { return az_1.AZ; } });
 var b2c_1 = require("./infrastructure/b2c");
@@ -37,4 +37,6 @@ var go = require("./infrastructure/go");
 exports.go = go;
 var logging = require("./infrastructure/logging");
 exports.logging = logging;
+var versionNumbers = require("./infrastructure/versionNumbers");
+exports.versionNumbers = versionNumbers;
 //# sourceMappingURL=index.js.map

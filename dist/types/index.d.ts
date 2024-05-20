@@ -13,4 +13,5 @@ import * as bash from './infrastructure/bash';
 import * as containerApp from './infrastructure/containerApp';
 import * as go from './infrastructure/go';
 import * as logging from './infrastructure/logging';
-export { Application, AZ, AZConfig, B2C, B2CResource, ContainerRepositoryResource, Domain, EnvSecrets, EnvVariables, GH, Git, Graph, handle, KeyVault, KeyVaultResource, Opts, ResourceGroups, StorageResource, Users, bash, containerApp, go, logging, };
+import * as versionNumbers from './infrastructure/versionNumbers';
+export { Application, AZ, AZConfig, B2C, B2CResource, ContainerRepositoryResource, Domain, EnvSecrets, EnvVariables, GH, Git, Graph, handle, KeyVault, KeyVaultResource, Opts, ResourceGroups, StorageResource, Users, bash, containerApp, go, logging, versionNumbers };
