@@ -16,6 +16,7 @@ jobs:
       env:
         ghToken:         ${{ secrets.CI_CD_TOKEN }}
         repositoryPath:  ${{ github.workspace }}
+        ref:             ${{ github.event.client_payload.ref || github.ref }}
         
     steps:
     - uses: actions/checkout@v4
