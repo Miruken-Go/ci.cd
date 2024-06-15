@@ -1,9 +1,15 @@
 import { Graph } from './graph';
 import { Domain, B2CResource } from './config';
-export declare class Users {
+export interface UsersOptions {
     domain: Domain;
     b2cResource: B2CResource;
     graph: Graph;
-    constructor(domain: Domain, b2cResource: B2CResource, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string);
+}
+export declare class Users {
+    options: UsersOptions;
+    domain: Domain;
+    b2cResource: B2CResource;
+    graph: Graph;
+    constructor(options: UsersOptions);
     configureBootstrapUsers(): Promise<void>;
 }

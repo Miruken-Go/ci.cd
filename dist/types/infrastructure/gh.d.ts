@@ -1,4 +1,4 @@
-interface ghConfig {
+interface ghOptions {
     ghToken: string;
     repository: string;
     repositoryOwner: string;
@@ -6,8 +6,8 @@ interface ghConfig {
     skipRepositoryDispatches?: boolean;
 }
 export declare class GH {
-    config: ghConfig;
-    constructor(config: ghConfig);
+    options: ghOptions;
+    constructor(options: ghOptions);
     sendRepositoryDispatch(eventType: string, payload: object, repository: string): Promise<void>;
     sendRepositoryDispatches(eventType: string, payload: object): Promise<void>;
 }

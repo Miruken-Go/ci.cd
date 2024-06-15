@@ -44,21 +44,16 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 import * as logging from './logging';
-import { AZ } from './az';
-import { Graph } from './graph';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import axios from 'axios';
 var B2C = (function () {
-    function B2C(domain, b2cResource, tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
-        if (!domain)
-            throw new Error('domain is required');
-        if (!b2cDeploymentPipelineClientId)
-            throw new Error('b2cDeploymentPipelineClientId is required');
-        this.domain = domain;
-        this.b2cResource = b2cResource;
-        this.graph = new Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
-        this.az = new AZ({ tenantId: tenantId, subscriptionId: subscriptionId, deploymentPipelineClientId: deploymentPipelineClientId, deploymentPipelineClientSecret: deploymentPipelineClientSecret });
+    function B2C(b2cOptions) {
+        this.options = b2cOptions;
+        this.domain = b2cOptions.domain;
+        this.b2cResource = b2cOptions.b2cResource;
+        this.graph = b2cOptions.graph;
+        this.az = b2cOptions.az;
     }
     B2C.prototype.getWellKnownOpenIdConfiguration = function () {
         return __awaiter(this, void 0, void 0, function () {

@@ -35,16 +35,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { header } from './logging';
-import { Graph } from './graph';
 var Users = (function () {
-    function Users(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
-        if (!domain)
-            throw new Error('domain is required');
-        if (!b2cDeploymentPipelineClientId)
-            throw new Error('b2cDeploymentPipelineClientId is required');
-        this.domain = domain;
-        this.b2cResource = b2cResource;
-        this.graph = new Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
+    function Users(options) {
+        this.options = options;
+        this.domain = options.domain;
+        this.b2cResource = options.b2cResource;
+        this.graph = options.graph;
     }
     Users.prototype.configureBootstrapUsers = function () {
         return __awaiter(this, void 0, void 0, function () {

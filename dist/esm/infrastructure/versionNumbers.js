@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import { execute } from './bash';
 export function epochVerion() {
-    return "v".concat(Math.floor(Date.now() / 1000)).trim();
+    return "v".concat(Math.floor(Date.now() / 1000));
 }
 export function repoVersion(repositoryPath, ref) {
     return __awaiter(this, void 0, void 0, function () {

@@ -1,14 +1,14 @@
-export interface AZConfig {
+export interface AZOptions {
     tenantId: string;
     subscriptionId: string;
     deploymentPipelineClientId: string;
     deploymentPipelineClientSecret: string;
 }
 export declare class AZ {
-    config: AZConfig;
+    options: AZOptions;
     loggedInToAZ: boolean;
     loggedInToACR: boolean;
-    constructor(config: AZConfig);
+    constructor(options: AZOptions);
     login(): Promise<void>;
     loginToACR(containerRepositoryName: string): Promise<void>;
     createResourceGroup(name: string, location: string, tags: Record<string, string>): Promise<void>;

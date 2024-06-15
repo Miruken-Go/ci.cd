@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.tagVersion = exports.repoVersion = exports.epochVerion = void 0;
 var bash_1 = require("./bash");
 function epochVerion() {
-    return "v".concat(Math.floor(Date.now() / 1000)).trim();
+    return "v".concat(Math.floor(Date.now() / 1000));
 }
 exports.epochVerion = epochVerion;
 function repoVersion(repositoryPath, ref) {

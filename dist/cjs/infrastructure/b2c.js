@@ -47,21 +47,16 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.B2C = void 0;
 var logging = require("./logging");
-var az_1 = require("./az");
-var graph_1 = require("./graph");
 var fs = require("node:fs");
 var path = require("node:path");
 var axios_1 = require("axios");
 var B2C = (function () {
-    function B2C(domain, b2cResource, tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
-        if (!domain)
-            throw new Error('domain is required');
-        if (!b2cDeploymentPipelineClientId)
-            throw new Error('b2cDeploymentPipelineClientId is required');
-        this.domain = domain;
-        this.b2cResource = b2cResource;
-        this.graph = new graph_1.Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret);
-        this.az = new az_1.AZ({ tenantId: tenantId, subscriptionId: subscriptionId, deploymentPipelineClientId: deploymentPipelineClientId, deploymentPipelineClientSecret: deploymentPipelineClientSecret });
+    function B2C(b2cOptions) {
+        this.options = b2cOptions;
+        this.domain = b2cOptions.domain;
+        this.b2cResource = b2cOptions.b2cResource;
+        this.graph = b2cOptions.graph;
+        this.az = b2cOptions.az;
     }
     B2C.prototype.getWellKnownOpenIdConfiguration = function () {
         return __awaiter(this, void 0, void 0, function () {

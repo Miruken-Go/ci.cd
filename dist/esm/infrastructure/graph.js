@@ -37,18 +37,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import * as querystring from 'node:querystring';
 import axios from 'axios';
 var Graph = (function () {
-    function Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret) {
+    function Graph(options) {
         this._token = undefined;
-        if (!domain)
-            throw new Error('domain is required');
-        if (!b2cDeploymentPipelineClientId)
-            throw new Error('b2cDeploymentPipelineClientId is required');
-        if (!b2cDeploymentPipelineClientSecret)
-            throw new Error('b2cDeploymentPipelineClientSecret is required');
-        this.domain = domain;
-        this.b2cResource = b2cResource;
-        this.b2cDeploymentPipelineClientId = b2cDeploymentPipelineClientId;
-        this.b2cDeploymentPipelineClientSecret = b2cDeploymentPipelineClientSecret;
+        this.domain = options.domain;
+        this.b2cResource = options.b2cResource;
+        this.b2cDeploymentPipelineClientId = options.b2cDeploymentPipelineClientId;
+        this.b2cDeploymentPipelineClientSecret = options.b2cDeploymentPipelineClientSecret;
     }
     Graph.prototype.getToken = function () {
         return __awaiter(this, void 0, void 0, function () {

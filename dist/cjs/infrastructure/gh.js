@@ -51,8 +51,8 @@ exports.GH = void 0;
 var bash = require("./bash");
 var axios_1 = require("axios");
 var GH = (function () {
-    function GH(config) {
-        this.config = config;
+    function GH(options) {
+        this.options = options;
         if (!process.env['GH_TOKEN']) {
             throw new Error('The gh command line tool requires GH_TOKEN to be set as and environment variable.');
         }
@@ -64,19 +64,19 @@ var GH = (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (((_a = this.config) === null || _a === void 0 ? void 0 : _a.skipRepositoryDispatches) == true)
+                        if (((_a = this.options) === null || _a === void 0 ? void 0 : _a.skipRepositoryDispatches) == true)
                             return [2];
-                        repo = repository || this.config.repository;
+                        repo = repository || this.options.repository;
                         if (!repo)
                             throw new Error("Repository name is required");
-                        payload = __assign(__assign({}, payload), { ref: this.config.ref });
+                        payload = __assign(__assign({}, payload), { ref: this.options.ref });
                         return [4, axios_1.default.post("https://api.github.com/repos/".concat(repo, "/dispatches"), {
                                 event_type: eventType,
                                 client_payload: payload
                             }, {
                                 headers: {
                                     Accept: 'application/vnd.github+json',
-                                    Authorization: "Bearer ".concat(this.config.ghToken),
+                                    Authorization: "Bearer ".concat(this.options.ghToken),
                                     "X-GitHub-Api-Version": '2022-11-28'
                                 }
                             })];
@@ -95,11 +95,11 @@ var GH = (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (((_a = this.config) === null || _a === void 0 ? void 0 : _a.skipRepositoryDispatches) == true)
+                        if (((_a = this.options) === null || _a === void 0 ? void 0 : _a.skipRepositoryDispatches) == true)
                             return [2];
                         if (!process.env.GH_TOKEN)
                             throw 'Environment variable required: GH_TOKEN';
-                        return [4, bash.json("\n            gh repo list ".concat(this.config.repositoryOwner, " --json name\n        "))];
+                        return [4, bash.json("\n            gh repo list ".concat(this.options.repositoryOwner, " --json name\n        "))];
                     case 1:
                         repos = _b.sent();
                         _i = 0, repos_1 = repos;
@@ -107,7 +107,7 @@ var GH = (function () {
                     case 2:
                         if (!(_i < repos_1.length)) return [3, 5];
                         repo = repos_1[_i];
-                        return [4, this.sendRepositoryDispatch(eventType, payload, "".concat(this.config.repositoryOwner, "/").concat(repo.name))];
+                        return [4, this.sendRepositoryDispatch(eventType, payload, "".concat(this.options.repositoryOwner, "/").concat(repo.name))];
                     case 3:
                         _b.sent();
                         _b.label = 4;
