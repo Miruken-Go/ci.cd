@@ -29,5 +29,5 @@ handle(async () => {
 
     const git = await new Git(secrets.ghToken)
     await git.commitAndPush('dist* -f', 'built javascript dist modules')
-    await git.tagAndPush(`v${version}`)
+    await git.tagAndPush(version)
 })
