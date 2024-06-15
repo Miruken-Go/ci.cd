@@ -1,7 +1,7 @@
 import { execute } from './bash'
 
-export function epochVerion() {
-    return `v${Math.floor(Date.now()/1000)}`.trim()
+export function epochVerion(): string {
+    return `v${Math.floor(Date.now()/1000)}`
 }
 
 //This docker container is running docker in docker from github actions

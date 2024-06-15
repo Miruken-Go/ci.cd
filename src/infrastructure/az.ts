@@ -1,7 +1,7 @@
 import * as bash  from './bash'
 import { header } from './logging'
 
-export interface AZConfig {
+export interface AZOptions {
     tenantId:                       string,
     subscriptionId:                 string,
     deploymentPipelineClientId:     string,
@@ -9,19 +9,19 @@ export interface AZConfig {
 }
 
 export class AZ {
-    config:        AZConfig
+    options:        AZOptions
     loggedInToAZ:  boolean = false 
     loggedInToACR: boolean = false 
     
-    constructor (config: AZConfig) {
-        this.config = config
+    constructor (options: AZOptions) {
+        this.options = options
     }
 
     async login() {
         if (this.loggedInToAZ) return 
 
         header('Logging into az')
-        await bash.execute(`az login --service-principal --username ${this.config.deploymentPipelineClientId} --password ${this.config.deploymentPipelineClientSecret} --tenant ${this.config.tenantId}`);
+        await bash.execute(`az login --service-principal --username ${this.options.deploymentPipelineClientId} --password ${this.options.deploymentPipelineClientSecret} --tenant ${this.options.tenantId}`);
         this.loggedInToAZ = true 
     }
 
@@ -43,7 +43,7 @@ export class AZ {
         for ( const [key, value] of Object.entries(tags)) {
             tagsAsString += `${key}=${value} `
         }
-        await bash.execute(`az group create --location ${location} --name ${name} --subscription ${this.config.subscriptionId} --tags ${tagsAsString}`)
+        await bash.execute(`az group create --location ${location} --name ${name} --subscription ${this.options.subscriptionId} --tags ${tagsAsString}`)
     }
 
     // https://learn.microsoft.com/en-us/azure/azure-resource-manager/troubleshooting/error-register-resource-provider?tabs=azure-cli
@@ -62,7 +62,7 @@ export class AZ {
 
     async getAzureContainerRepositoryPassword(name: string) {
         await this.login()
-        const result = await bash.json(`az acr credential show --name ${name} --subscription ${this.config.subscriptionId}`, true)
+        const result = await bash.json(`az acr credential show --name ${name} --subscription ${this.options.subscriptionId}`, true)
         if (!result.passwords.length)
             throw new Error(`Expected passwords from the Azure Container Registry: ${name}`)
 

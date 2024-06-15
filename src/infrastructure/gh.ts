@@ -1,7 +1,7 @@
 import * as bash from './bash'
 import axios     from 'axios'
 
-interface ghConfig {
+interface ghOptions {
     ghToken: string
     repository: string
     repositoryOwner: string
@@ -10,10 +10,10 @@ interface ghConfig {
 }
 
 export class GH {
-    config: ghConfig
+    options: ghOptions
 
-    constructor(config: ghConfig) {
-        this.config = config
+    constructor(options: ghOptions) {
+        this.options = options
 
         if (!process.env['GH_TOKEN']) {
             throw new Error('The gh command line tool requires GH_TOKEN to be set as and environment variable.')
@@ -21,14 +21,14 @@ export class GH {
     }
 
     async sendRepositoryDispatch(eventType: string, payload: object, repository: string) { 
-        if (this.config?.skipRepositoryDispatches == true) return
+        if (this.options?.skipRepositoryDispatches == true) return
 
-        const repo = repository || this.config.repository
+        const repo = repository || this.options.repository
         if (!repo) throw new Error("Repository name is required")
 
         payload =  {
             ...payload,
-            ref: this.config.ref,
+            ref: this.options.ref,
         }
 
         //in this case the repo variable should be repositoryOwner/repositoryName
@@ -40,7 +40,7 @@ export class GH {
         }, {
             headers: {
                 Accept: 'application/vnd.github+json',
-                Authorization: `Bearer ${this.config.ghToken}`,
+                Authorization: `Bearer ${this.options.ghToken}`,
                 "X-GitHub-Api-Version": '2022-11-28'
             }
         })
@@ -49,16 +49,16 @@ export class GH {
     }
 
     async sendRepositoryDispatches(eventType: string, payload: object) { 
-        if (this.config?.skipRepositoryDispatches == true) return
+        if (this.options?.skipRepositoryDispatches == true) return
 
         if (!process.env.GH_TOKEN) throw 'Environment variable required: GH_TOKEN'
 
         const repos = await bash.json(`
-            gh repo list ${this.config.repositoryOwner} --json name
+            gh repo list ${this.options.repositoryOwner} --json name
         `)
 
         for (const repo of repos) {
-            await this.sendRepositoryDispatch(eventType, payload, `${this.config.repositoryOwner}/${repo.name}`)
+            await this.sendRepositoryDispatch(eventType, payload, `${this.options.repositoryOwner}/${repo.name}`)
         }
     }
 }

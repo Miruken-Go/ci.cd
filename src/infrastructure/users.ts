@@ -2,17 +2,23 @@ import { header }              from './logging'
 import { Graph }               from './graph'
 import { Domain, B2CResource } from './config'
 
-export class Users { 
-    domain:   Domain
+export interface UsersOptions {
+    domain:      Domain
     b2cResource: B2CResource
-    graph:    Graph
+    graph:       Graph 
+}
 
-    constructor (domain: Domain, b2cResource: B2CResource, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string) {
-        if (!domain)                        throw new Error('domain is required')
-        if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
-        this.domain   = domain
-        this.b2cResource = b2cResource
-        this.graph    = new Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret)
+export class Users { 
+    options:     UsersOptions
+    domain:      Domain
+    b2cResource: B2CResource
+    graph:       Graph
+
+    constructor (options: UsersOptions) {
+        this.options     = options
+        this.domain      = options.domain
+        this.b2cResource = options.b2cResource
+        this.graph       = options.graph 
     }
 
     async configureBootstrapUsers() {

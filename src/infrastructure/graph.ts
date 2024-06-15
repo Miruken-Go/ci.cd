@@ -2,6 +2,13 @@ import * as querystring        from 'node:querystring'
 import axios                   from 'axios'
 import { Domain, B2CResource } from './config'
 
+export interface GraphOptions {
+    domain:                            Domain
+    b2cResource:                       B2CResource
+    b2cDeploymentPipelineClientId:     string
+    b2cDeploymentPipelineClientSecret: string
+}
+
 export class Graph {
     domain:                            Domain
     b2cResource:                       B2CResource
@@ -11,15 +18,11 @@ export class Graph {
 
     static APP_ID = "00000003-0000-0000-c000-000000000000"
 
-    constructor (domain: Domain, b2cResource: B2CResource, b2cDeploymentPipelineClientId: string, b2cDeploymentPipelineClientSecret: string) {
-        if (!domain)                            throw new Error('domain is required')
-        if (!b2cDeploymentPipelineClientId)     throw new Error('b2cDeploymentPipelineClientId is required')
-        if (!b2cDeploymentPipelineClientSecret) throw new Error('b2cDeploymentPipelineClientSecret is required')
-
-        this.domain                            = domain
-        this.b2cResource                          = b2cResource
-        this.b2cDeploymentPipelineClientId     = b2cDeploymentPipelineClientId
-        this.b2cDeploymentPipelineClientSecret = b2cDeploymentPipelineClientSecret
+    constructor (options: GraphOptions) {
+        this.domain                            = options.domain
+        this.b2cResource                       = options.b2cResource
+        this.b2cDeploymentPipelineClientId     = options.b2cDeploymentPipelineClientId
+        this.b2cDeploymentPipelineClientSecret = options.b2cDeploymentPipelineClientSecret
     }
 
     async getToken() {

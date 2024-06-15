@@ -48,29 +48,28 @@ interface B2cApplication {
     }
 }
 
-export class B2C {
-    domain
-    graph
+export interface B2COptions {
+    domain:      Domain
     b2cResource: B2CResource
-    az:       AZ
+    graph:       Graph
+    az:          AZ
+}
+
+export class B2C {
+    domain:      Domain
+    b2cResource: B2CResource
+    graph:       Graph
+    az:          AZ
+    options:     B2COptions
 
     constructor (
-        domain:                            Domain, 
-        b2cResource:                       B2CResource, 
-        tenantId:                          string, 
-        subscriptionId:                    string, 
-        deploymentPipelineClientId:        string, 
-        deploymentPipelineClientSecret:    string, 
-        b2cDeploymentPipelineClientId:     string, 
-        b2cDeploymentPipelineClientSecret: string
+        b2cOptions: B2COptions,
     ) {
-        if (!domain)                        throw new Error('domain is required')
-        if (!b2cDeploymentPipelineClientId) throw new Error('b2cDeploymentPipelineClientId is required')
-
-        this.domain   = domain
-        this.b2cResource = b2cResource
-        this.graph    = new Graph(domain, b2cResource, b2cDeploymentPipelineClientId, b2cDeploymentPipelineClientSecret)
-        this.az       = new AZ({tenantId, subscriptionId, deploymentPipelineClientId, deploymentPipelineClientSecret})
+        this.options     = b2cOptions
+        this.domain      = b2cOptions.domain
+        this.b2cResource = b2cOptions.b2cResource
+        this.graph       = b2cOptions.graph
+        this.az          = b2cOptions.az
     }
 
     async getWellKnownOpenIdConfiguration() {
